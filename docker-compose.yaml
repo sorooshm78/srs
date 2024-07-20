@@ -1,0 +1,7 @@
+services:
+  app:
+    build: ./app
+    container_name: app
+    tty: true
+    volumes:
+      - .:/project
