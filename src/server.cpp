@@ -25,7 +25,7 @@ int main()
 
     // Create SIP transport. Error handling sample is shown
     TransportConfig tcfg;
-    tcfg.port = 5060;
+    tcfg.port = 6060;
     try {
         ep.transportCreate(PJSIP_TRANSPORT_UDP, tcfg);
     } catch (Error &err) {
@@ -39,10 +39,8 @@ int main()
 
     // Configure an AccountConfig
     AccountConfig acfg;
-    acfg.idUri = "sip:test@sip.pjsip.org";
-    acfg.regConfig.registrarUri = "sip:sip.pjsip.org";
-    AuthCredInfo cred("digest", "*", "test", 0, "secret");
-    acfg.sipConfig.authCreds.push_back( cred );
+    acfg.idUri = "sip:1000@192.168.228.130:5060";
+    acfg.regConfig.registrarUri = "sip:192.168.228.130:5060";
 
     // Create the account
     MyAccount *acc = new MyAccount;
