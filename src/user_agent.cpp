@@ -5,12 +5,13 @@ using namespace pj;
 
 // Subclass to extend the Account and get notifications etc.
 class MyAccount : public Account {
-public:
-    virtual void onRegState(OnRegStateParam &prm) {
-        AccountInfo ai = getInfo();
-        std::cout << (ai.regIsActive? "*** Register:" : "*** Unregister:")
-                  << " code=" << prm.code << std::endl;
-    }
+    public:
+        virtual void onRegState(OnRegStateParam &prm) {
+            AccountInfo ai = getInfo();
+            std::cout << (ai.regIsActive? "*** Register:" : "*** Unregister:")
+                    << " code=" << prm.code << std::endl;
+        }
+    
 };
 
 int main()
@@ -47,7 +48,7 @@ int main()
     acc->create(acfg);
 
     // Here we don't have anything else to do..
-    pj_thread_sleep(10000);
+    pj_thread_sleep(1 * 60000);
 
     // Delete the account. This will unregister from server
     delete acc;
