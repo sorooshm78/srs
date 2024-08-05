@@ -11,7 +11,13 @@ class MyAccount : public Account {
             std::cout << (ai.regIsActive? "*** Register:" : "*** Unregister:")
                     << " code=" << prm.code << std::endl;
         }
-    
+        // virtual void onIncomingCall(OnIncomingCallParam &iprm){
+        //     std::cout << "############# Incoming Call #############" << std::endl;
+        //     Call *call = new MyCall(*this, iprm.callId);
+        //     CallOpParam prm;
+        //     prm.statusCode = PJSIP_SC_OK;
+        //     call->answer(prm);
+        // }
 };
 
 int main()
@@ -48,7 +54,7 @@ int main()
     acc->create(acfg);
 
     // Here we don't have anything else to do..
-    pj_thread_sleep(1 * 60000);
+    pj_thread_sleep(10 * 1000); // 10 second sleep
 
     // Delete the account. This will unregister from server
     delete acc;
