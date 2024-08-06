@@ -1,5 +1,6 @@
 #include <pjsua2.hpp>
 #include <iostream>
+#include <csignal>
 
 using namespace pj;
 
@@ -19,6 +20,13 @@ class MyAccount : public Account {
             call->answer(prm);
         }
 };
+
+
+void signal_callback_handler(int signum) {
+   std::cout << "Caught signal " << signum << std::endl;
+    // Terminate program
+    exit(signum);
+}
 
 int main()
 {
@@ -54,7 +62,13 @@ int main()
     acc->create(acfg);
 
     // Here we don't have anything else to do..
-    pj_thread_sleep(10 * 1000); // 10 second sleep
+    // pj_thread_sleep(10 * 1000); // 10 second sleep
+
+    signal(SIGINT, signal_callback_handler);
+    while(true){
+       std::cout << "Program processing..." << std::endl;
+       sleep(1);
+    }
 
     // Delete the account. This will unregister from server
     delete acc;
