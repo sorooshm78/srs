@@ -4,6 +4,8 @@
 
 using namespace pj;
 
+bool is_shutdown = false;
+
 // Subclass to extend the Account and get notifications etc.
 class MyAccount : public Account {
     public:
@@ -23,9 +25,7 @@ class MyAccount : public Account {
 
 
 void signal_callback_handler(int signum) {
-   std::cout << "Caught signal " << signum << std::endl;
-    // Terminate program
-    exit(signum);
+    is_shutdown = true;
 }
 
 int main()
@@ -61,18 +61,13 @@ int main()
     MyAccount *acc = new MyAccount;
     acc->create(acfg);
 
-    // Here we don't have anything else to do..
-    // pj_thread_sleep(10 * 1000); // 10 second sleep
-
     signal(SIGINT, signal_callback_handler);
-    while(true){
-       std::cout << "Program processing..." << std::endl;
+    while(!is_shutdown){
        sleep(1);
     }
 
     // Delete the account. This will unregister from server
     delete acc;
 
-    // This will implicitly shutdown the library
     return 0;
 }
