@@ -12,18 +12,30 @@ class MyCall : public Call {
         MyCall(Account &acc, int call_id = PJSUA_INVALID_ID)
         : Call(acc, call_id)
         { }
+
+        void print_call_state(string state, string localUri, string remoteUri, long connectDuration, string callID){
+            std::cout << "########## " << "Call-ID:" << callID;
+            std::cout << "\t";
+            std::cout << "State:" << state;
+            std::cout << "\t";
+            std::cout << "(" << remoteUri << " -> " << localUri << ")";
+            std::cout << "\t";
+            std::cout << "Duration:" << connectDuration << "sec";
+            std::cout << std::endl;
+        }
+
         virtual void onCallState(OnCallStateParam &prm){
             CallInfo ci = getInfo();
             switch (ci.state)
             {
             case PJSIP_INV_STATE_INCOMING:
-                std:: cout << "########## Call is incoming ##########" << std::endl; 
+                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
                 break;
             case PJSIP_INV_STATE_CONNECTING:
-                std:: cout << "########## Call is start ##########" << std::endl; 
+                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
                 break;
             case PJSIP_INV_STATE_DISCONNECTED:
-                std:: cout << "########## Call is end ##########" << std::endl; 
+                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
                 break;
             }
         }
