@@ -26,17 +26,26 @@ class MyCall : public Call {
 
         virtual void onCallState(OnCallStateParam &prm){
             CallInfo ci = getInfo();
-            switch (ci.state)
-            {
-            case PJSIP_INV_STATE_INCOMING:
+            if (ci.state == PJSIP_INV_STATE_CONNECTING || ci.state == PJSIP_INV_STATE_DISCONNECTED){
                 print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
-                break;
-            case PJSIP_INV_STATE_CONNECTING:
-                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
-                break;
-            case PJSIP_INV_STATE_DISCONNECTED:
-                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
-                break;
+            }
+        }
+
+        virtual void onCallMediaState(OnCallMediaStateParam &prm){
+            CallInfo ci = getInfo();
+            for (unsigned i = 0; i < ci.media.size(); i++) {
+                if (ci.media[i].type==PJMEDIA_TYPE_AUDIO) {
+                    try {
+                        AudioMedia aud_med = getAudioMedia(i);
+                        
+                        AudioMediaRecorder wav_writer;
+                        wav_writer.createRecorder("file.wav");
+                        aud_med.startTransmit(wav_writer);
+                    }
+                    catch(const Error &e) {
+                        // Handle invalid or not audio media error here
+                    }
+                }   
             }
         }
 };
@@ -50,7 +59,6 @@ class MyAccount : public Account {
                     << " code=" << prm.code << std::endl;
         }
         virtual void onIncomingCall(OnIncomingCallParam &iprm){
-            std::cout << "############# Incoming Call #############" << std::endl;
             MyCall *call = new MyCall(*this, iprm.callId);
             CallOpParam prm;
             prm.statusCode = PJSIP_SC_OK;
