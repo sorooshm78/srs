@@ -6,6 +6,29 @@ using namespace pj;
 
 bool is_shutdown = false;
 
+
+class MyCall : public Call {
+    public:
+        MyCall(Account &acc, int call_id = PJSUA_INVALID_ID)
+        : Call(acc, call_id)
+        { }
+        virtual void onCallState(OnCallStateParam &prm){
+            CallInfo ci = getInfo();
+            switch (ci.state)
+            {
+            case PJSIP_INV_STATE_INCOMING:
+                std:: cout << "########## Call is incoming ##########" << std::endl; 
+                break;
+            case PJSIP_INV_STATE_CONNECTING:
+                std:: cout << "########## Call is start ##########" << std::endl; 
+                break;
+            case PJSIP_INV_STATE_DISCONNECTED:
+                std:: cout << "########## Call is end ##########" << std::endl; 
+                break;
+            }
+        }
+};
+
 // Subclass to extend the Account and get notifications etc.
 class MyAccount : public Account {
     public:
@@ -16,7 +39,7 @@ class MyAccount : public Account {
         }
         virtual void onIncomingCall(OnIncomingCallParam &iprm){
             std::cout << "############# Incoming Call #############" << std::endl;
-            Call *call = new Call(*this, iprm.callId);
+            MyCall *call = new MyCall(*this, iprm.callId);
             CallOpParam prm;
             prm.statusCode = PJSIP_SC_OK;
             call->answer(prm);
