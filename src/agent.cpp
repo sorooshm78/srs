@@ -9,6 +9,8 @@ bool is_shutdown = false;
 
 class MyCall : public Call {
     public:
+        AudioMediaRecorder recorder;
+        
         MyCall(Account &acc, int call_id = PJSUA_INVALID_ID)
         : Call(acc, call_id)
         { }
@@ -25,32 +27,49 @@ class MyCall : public Call {
         }
 
         virtual void onCallState(OnCallStateParam &prm){
-            CallInfo ci = getInfo();
-            if (ci.state == PJSIP_INV_STATE_CONNECTING || ci.state == PJSIP_INV_STATE_DISCONNECTED){
-                print_call_state(ci.stateText, ci.localUri, ci.remoteUri, ci.connectDuration.sec, ci.callIdString);
+            CallInfo callInfo = getInfo();
+            if (callInfo.state == PJSIP_INV_STATE_CONNECTING || callInfo.state == PJSIP_INV_STATE_DISCONNECTED){
+                print_call_state(callInfo.stateText, callInfo.localUri, callInfo.remoteUri, callInfo.connectDuration.sec, callInfo.callIdString);
             }
         }
-
-        void onCallMediaState(OnCallMediaStateParam &prm)
+  
+        // save media to wav file
+        virtual void onCallMediaState(OnCallMediaStateParam &params)
         {
-            CallInfo ci = getInfo();
-
-            for (unsigned i = 0; i < ci.media.size(); i++) {
-                if (ci.media[i].type==PJMEDIA_TYPE_AUDIO) {
-                    try {
-                        AudioMedia aud_med = getAudioMedia(i);
-
-                        // Connect the call audio media to sound device
-                        AudDevManager& mgr = Endpoint::instance().audDevManager();
-                        aud_med.startTransmit(mgr.getPlaybackDevMedia());
-                        mgr.getCaptureDevMedia().startTransmit(aud_med);
-                    }
-                    catch(const Error &e) {
-                        // Handle invalid or not audio media error here
-                    }
+            CallInfo callInfo = getInfo();
+            for (unsigned i = 0; i < callInfo.media.size(); i++)
+            {
+                if (callInfo.media[i].type == PJMEDIA_TYPE_AUDIO && getMedia(i))
+                {
+                    AudioMedia *audioMedia = (AudioMedia *)getMedia(i);
+                    string file_name = callInfo.callIdString + ".wav";
+                    recorder.createRecorder(file_name);
+                    audioMedia->startTransmit(recorder);
                 }
             }
         }
+        
+        // // echo call
+        // void onCallMediaState(OnCallMediaStateParam &prm)
+        // {
+        //     CallInfo callInfo = getInfo();
+
+        //     for (unsigned i = 0; i < callInfo.media.size(); i++) {
+        //         if (callInfo.media[i].type==PJMEDIA_TYPE_AUDIO) {
+        //             try {
+        //                 AudioMedia aud_med = getAudioMedia(i);
+                        
+        //                 // Connect the call audio media to sound device
+        //                 AudDevManager& mgr = Endpoint::instance().audDevManager();
+        //                 aud_med.startTransmit(mgr.getPlaybackDevMedia());
+        //                 mgr.getCaptureDevMedia().startTransmit(aud_med);
+        //             }
+        //             catch(const Error &e) {
+        //                 // Handle invalid or not audio media error here
+        //             }
+        //         }
+        //     }
+        // }
 };
 
 // Subclass to extend the Account and get notifications etc.
