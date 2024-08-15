@@ -6,6 +6,26 @@ using namespace pj;
 
 bool isShutdown = false;
 
+/*
+ * The log level conventions:
+ *  - 0: fatal error
+ *  - 1: error
+ *  - 2: warning
+ *  - 3: info
+ *  - 4: debug
+ *  - 5: trace
+ *  - 6: more detailed trace
+*/
+enum loglevel{
+    FATAL_ERROR,
+    ERROR,
+    WARNING,
+    INFO,
+    DEBUG,
+    TRACE,
+    DETAILED_TRACE,
+};
+
 
 class MyCall : public Call {
     public:
@@ -94,6 +114,8 @@ int main()
 
     // Initialize endpoint
     EpConfig endpointConfig;
+    endpointConfig.logConfig.level = loglevel::WARNING;
+    endpointConfig.logConfig.consoleLevel = loglevel::WARNING;
     endpoint.libInit(endpointConfig);
 
     // Create SIP transport. Error handling sample is shown
