@@ -41,7 +41,6 @@ class MyCall : public Call {
             AudDevManager& manager = Endpoint::instance().audDevManager();
             audioMedia.startTransmit(manager.getPlaybackDevMedia());
             manager.getCaptureDevMedia().startTransmit(audioMedia);
-
         }
 
         virtual void onCallState(OnCallStateParam &param){
@@ -70,8 +69,8 @@ class MyCall : public Call {
 class MyAccount : public Account {
     public:
         virtual void onRegState(OnRegStateParam &param) {
-            AccountInfo ai = getInfo();
-            std::cout << (ai.regIsActive? "*** Register:" : "*** Unregister:")
+            AccountInfo accountInfo = getInfo();
+            std::cout << (accountInfo.regIsActive? "*** Register:" : "*** Unregister:")
                     << " code=" << param.code << std::endl;
         }
         virtual void onIncomingCall(OnIncomingCallParam &incomingParam){
