@@ -4,7 +4,7 @@
 
 using namespace pj;
 
-bool is_shutdown = false;
+bool isShutdown = false;
 
 
 class MyCall : public Call {
@@ -15,7 +15,7 @@ class MyCall : public Call {
         : Call(account, callID)
         { }
 
-        void print_call_state(string state, string localUri, string remoteUri, long connectDuration, string callID){
+        void printCallState(string state, string localUri, string remoteUri, long connectDuration, string callID){
             std::cout << "########## " << "Call-ID:" << callID;
             std::cout << "\t";
             std::cout << "State:" << state;
@@ -47,7 +47,7 @@ class MyCall : public Call {
         virtual void onCallState(OnCallStateParam &param){
             CallInfo callInfo = getInfo();
             if (callInfo.state == PJSIP_INV_STATE_CONNECTING || callInfo.state == PJSIP_INV_STATE_DISCONNECTED){
-                print_call_state(callInfo.stateText, callInfo.localUri, callInfo.remoteUri, callInfo.connectDuration.sec, callInfo.callIdString);
+                printCallState(callInfo.stateText, callInfo.localUri, callInfo.remoteUri, callInfo.connectDuration.sec, callInfo.callIdString);
             }
         }
   
@@ -84,7 +84,7 @@ class MyAccount : public Account {
 
 
 void signalCallbackHandler(int signum) {
-    is_shutdown = true;
+    isShutdown = true;
 }
 
 int main()
@@ -121,7 +121,7 @@ int main()
     account->create(accountConfig);
 
     signal(SIGINT, signalCallbackHandler);
-    while(!is_shutdown){
+    while(!isShutdown){
        sleep(1);
     }
 
