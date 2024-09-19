@@ -1,7 +1,0 @@
-services:
-  kamailio:
-    image: ghcr.io/kamailio/kamailio:5.8.2-bookworm
-    container_name: kamailio
-    network_mode: "host"
-    volumes:
-      - ./kamailio:/etc/kamailio/
