@@ -2,50 +2,88 @@
 #include <pjsip.h>
 #include <iostream>
 
-// Define port number for SIP server
+
 #define SIP_PORT 5060
+#define LOG_LEVEL 3
 
-// Log levels for debugging
-#define LOG_LEVEL 4
 
-// Function to handle incoming SIP requests
+void print_sdp_info(const pjmedia_sdp_session *sdp_session) {
+    std::cout << "Session name: " << std::string(sdp_session->name.ptr, sdp_session->name.slen) << std::endl;
+    if (sdp_session->conn) {
+        std::cout << "Connection Address: " << std::string(sdp_session->conn->addr.ptr, sdp_session->conn->addr.slen)  << std::endl;
+    }
+    for (unsigned i = 0; i < sdp_session->media_count; ++i) {
+        pjmedia_sdp_media *media = sdp_session->media[i];
+
+        std::cout << "Media Type: " 
+                << std::string(media->desc.media.ptr, media->desc.media.slen) 
+                << std::endl;
+
+        std::cout << "Port: " << media->desc.port << std::endl;
+
+        std::cout << "Transport: " 
+                << std::string(media->desc.transport.ptr, media->desc.transport.slen) 
+                << std::endl;
+
+        for (unsigned j = 0; j < media->desc.fmt_count; ++j) {
+            std::cout << "Format: " 
+                    << std::string(media->desc.fmt[j].ptr, media->desc.fmt[j].slen) 
+                    << std::endl;
+        }
+    }
+}
+
+
 static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 {
-    std::cout << "Received SIP message" << std::endl;
-
-    // Parse the SIP request headers
     pjsip_msg *msg = rdata->msg_info.msg;
-    if (msg->type == PJSIP_REQUEST_MSG) {
-        std::cout << "Incoming SIP Request: " << msg->line.req.method.name.ptr << std::endl;
+    if (pjsip_method_cmp(&msg->line.req.method, &pjsip_invite_method) != 0) {
+        return PJ_TRUE;
+    }
+    
+    pjmedia_sdp_session *sdp_session;
+  
+    if (msg->body == NULL || msg->body->data == NULL) {
+        std::cout << "Message body is NULL." << std::endl;
+        return PJ_FALSE;
     }
 
-    // Iterate and print all headers
-    pjsip_hdr *header = msg->hdr.next;
-    while (header != &msg->hdr) {
-        std::cout << "Header: " << header->name.ptr << std::endl;
-        header = header->next;
+    pj_pool_t *pool = pjsua_pool_create("sdp_parse_pool", 1024, 1024);
+    if (!pool) {
+        std::cout << "Failed to create memory pool." << std::endl;
+        return PJ_FALSE;
     }
 
+    pj_status_t status = pjmedia_sdp_parse(pool, (char*)msg->body->data, msg->body->len, &sdp_session);
+    
+    if (status == PJ_SUCCESS) {
+        std::cout << "########################### SDP parsed successfully." << std::endl;
+    } else {
+        std::cout << "###################### Failed to parse SDP." << std::endl;
+    }
+
+    print_sdp_info(sdp_session);
+    pj_pool_release(pool);
     return PJ_TRUE;
 }
 
-// Register the PJSIP module to handle incoming requests
-static pjsip_module mod_msg_handler =
-{
-    nullptr, nullptr,                  // prev, next
-    { "mod-msg-handler", 15 },          // Name
-    -1,                                 // ID
-    PJSIP_MOD_PRIORITY_TRANSPORT_LAYER, // Priority
-    nullptr,                            // load()
-    nullptr,                            // start()
-    nullptr,                            // stop()
-    nullptr,                            // unload()
-    &on_rx_request,                     // on_rx_request()
-    nullptr,                            // on_rx_response()
-    nullptr,                            // on_tx_request()
-    nullptr,                            // on_tx_response()
-    nullptr,                            // on_tsx_state()
+
+static pjsip_module srs_module ={
+    nullptr, nullptr,                               // prev, next
+    { const_cast<char*>("srs-module"), 10 } ,       // Name
+    -1,                                             // ID
+    PJSIP_MOD_PRIORITY_TRANSPORT_LAYER,             // Priority
+    nullptr,                                        // load()
+    nullptr,                                        // start()
+    nullptr,                                        // stop()
+    nullptr,                                        // unload()
+    &on_rx_request,                                 // on_rx_request()
+    nullptr,                                        // on_rx_response()
+    nullptr,                                        // on_tx_request()
+    nullptr,                                        // on_tx_response()
+    nullptr,                                        // on_tsx_state()
 };
+
 
 // Initialization of PJSIP
 void init_pjsip()
@@ -75,8 +113,9 @@ void init_pjsip()
     pjsua_start();
 
     // Register custom module to intercept incoming SIP messages
-    pjsip_endpt_register_module(pjsua_get_pjsip_endpt(), &mod_msg_handler);
+    pjsip_endpt_register_module(pjsua_get_pjsip_endpt(), &srs_module);
 }
+
 
 int main()
 {
@@ -101,3 +140,4 @@ int main()
 
     return 0;
 }
+
