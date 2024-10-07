@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
     endpointConfig.logConfig.level = loglevel::DEBUG;
     endpointConfig.logConfig.consoleLevel = loglevel::DEBUG;
     endpoint.libInit(endpointConfig);
-
+    endpoint.audDevManager().setNullDev();
 
     TransportConfig transportConfig;
     transportConfig.port = LISTEN_PORT;
