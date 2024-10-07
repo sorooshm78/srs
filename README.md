@@ -680,5 +680,29 @@ Let’s break down each of the specific `Require` values (`siprec`, `100rel`, `r
 - **`replaces`**: Requires support for call leg replacement (used in call transfers).
 - **`timer`**: Requires support for session timers to manage session expiration.
 
-These features are all essential in various advanced SIP scenarios to ensure proper handling of recording, reliable signaling, session transfers, and session duration management.
 ---------------------------------------------------------
+## Endpoint.audDevManager().setNullDev()
+In PJSIP, `Endpoint.audDevManager().setNullDev()` is used to manage the audio device in the application. Here's a detailed explanation:
+
+- **PJSIP** is a multimedia communication library that implements standard protocols such as SIP (Session Initiation Protocol), SDP (Session Description Protocol), and RTP (Real-Time Transport Protocol). It is commonly used for VoIP (Voice over IP) applications.
+
+- **`Endpoint`**: This is a high-level API in PJSIP that represents the entire application. It provides functions to create and manage different PJSIP components, such as transports, accounts, and audio/video management.
+
+- **`audDevManager()`**: The `audDevManager()` method of `Endpoint` is used to access the **Audio Device Manager**. This component is responsible for managing the audio devices used in the application, such as speakers, microphones, or other audio input/output devices.
+
+- **`setNullDev()`**: The `setNullDev()` method configures PJSIP to use a "null" audio device, meaning no real audio device is used for the media session. This can be useful in scenarios where you want to establish SIP sessions but do not need actual audio transmission. For example:
+    - **Testing or Development**: During testing or debugging, you may want to establish SIP sessions without real audio.
+    - **Server Applications**: In server-side applications like SIP proxies, there may be a need to manage call sessions without actually transmitting audio.
+
+By using `setNullDev()`, you effectively disable audio capture and playback. The media streams will still be processed, but no sound will be transmitted or played.
+
+Here’s an example use case:
+```cpp
+// Access the audio device manager
+AudioDevManager& adm = Endpoint::instance().audDevManager();
+
+// Set the audio device to null
+adm.setNullDev();
+```
+
+This will make the PJSIP endpoint avoid interacting with any hardware device for audio, and the media sessions will have no actual audio input/output.
