@@ -23,24 +23,12 @@ enum loglevel
 class MyCall : public Call
 {
 public:
-    AudioMediaRecorder recorder;
+    AudioMediaRecorder recorder1;
+    AudioMediaRecorder recorder2;
 
     MyCall(Account& account, int callID = PJSUA_INVALID_ID)
         : Call(account, callID)
     {
-    }
-
-    string getWavFileName()
-    {
-        CallInfo callInfo = getInfo();
-        return callInfo.callIdString + ".wav";
-    }
-
-    void saveAudioMedio(AudioMedia audioMedio)
-    {
-        string fileName = getWavFileName();
-        recorder.createRecorder(fileName);
-        audioMedio.startTransmit(recorder);
     }
 
     void printCallState(string state, string localUri, string remoteUri, long connectDuration, string callID)
@@ -53,6 +41,26 @@ public:
         std::cout << "\t";
         std::cout << "Duration:" << connectDuration << "sec";
         std::cout << std::endl;
+    }
+
+    string getWavFileName(int media_index)
+    {
+        CallInfo callInfo = getInfo();
+        int recorder = media_index + 1;
+        return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
+    }
+
+    void saveAudioMedia(AudioMedia audioMedio, int media_index)
+    {
+        string fileName = getWavFileName(media_index);
+        if(media_index == 0){
+            recorder1.createRecorder(fileName);
+            audioMedio.startTransmit(recorder1);
+        }
+        if(media_index == 1){
+            recorder2.createRecorder(fileName);
+            audioMedio.startTransmit(recorder2);
+        }
     }
 
     virtual void onCallState(OnCallStateParam& param)
@@ -68,12 +76,12 @@ public:
     virtual void onCallMediaState(OnCallMediaStateParam& params)
     {
         CallInfo callInfo = getInfo();
-        for (unsigned i = 0; i < callInfo.media.size(); i++)
+        for (unsigned media_index = 0; media_index < callInfo.media.size(); media_index++)
         {
-            if (callInfo.media[i].type == PJMEDIA_TYPE_AUDIO)
+            if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO)
             {
-                AudioMedia audioMedia = getAudioMedia(i);
-                saveAudioMedio(audioMedia);
+                AudioMedia audioMedia = getAudioMedia(media_index);
+                saveAudioMedia(audioMedia, media_index);
             }
         }
     }
@@ -111,8 +119,8 @@ int main(int argc, char* argv[])
     endpoint.libCreate();
 
     EpConfig endpointConfig;
-    endpointConfig.logConfig.level = loglevel::DEBUG;
-    endpointConfig.logConfig.consoleLevel = loglevel::DEBUG;
+    endpointConfig.logConfig.level = loglevel::WARNING;
+    endpointConfig.logConfig.consoleLevel = loglevel::WARNING;
     endpoint.libInit(endpointConfig);
     endpoint.audDevManager().setNullDev();
 
