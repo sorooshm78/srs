@@ -3829,19 +3829,19 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
         ((maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt) ||
         (acc->cfg.rtcp_fb_cfg.cap_count)))
     {
-        printf("################# We need to re-nego SDP or modify our answer when\n");
+        // printf("################# We need to re-nego SDP or modify our answer when\n");
         pjmedia_sdp_session *local_sdp_renego = NULL;
 
 
-        printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
+        // printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
         local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);
-        printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
+        // printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
         local_sdp = local_sdp_renego;
         need_renego_sdp = PJ_TRUE;
 
         /* Add RTCP-FB info into local SDP answer */
         if (acc->cfg.rtcp_fb_cfg.cap_count) {
-            printf("####### Add RTCP-FB info into local SDP answer\n");
+            // printf("####### Add RTCP-FB info into local SDP answer\n");
             for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
                 status = pjmedia_rtcp_fb_encode_sdp(
                                         tmp_pool, pjsua_var.med_endpt,
@@ -3861,12 +3861,12 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
          * which media would pass the SDP negotiation.
          */
         /////////Problem
-        printf("############## if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt) \n");
-        printf("############## maudcnt:%d     mvidcnt:%d \n", maudcnt, mvidcnt);
-        printf("############## call->opt.aud_cnt:%d     call->opt.vid_cnt:%d \n", call->opt.aud_cnt, call->opt.vid_cnt);
+        // printf("############## if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt) \n");
+        // printf("############## maudcnt:%d     mvidcnt:%d \n", maudcnt, mvidcnt);
+        // printf("############## call->opt.aud_cnt:%d     call->opt.vid_cnt:%d \n", call->opt.aud_cnt, call->opt.vid_cnt);
         if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt)
         {
-            printf("####### Applying media count limitation. Note that in generating SDP\n");
+            // printf("####### Applying media count limitation. Note that in generating SDP\n");
 
             // maudcnt = PJ_MIN(maudcnt, call->opt.aud_cnt);
             // mvidcnt = PJ_MIN(mvidcnt, call->opt.vid_cnt);
@@ -3886,8 +3886,8 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
             //     /* Deactivate this excess media */
             //     pjmedia_sdp_media_deactivate(tmp_pool, m);
             // }
-            printf("--------------local sdp----------------\n");
-            printf("########################################################################################################################################\n");
+            // printf("--------------local sdp----------------\n");
+            // printf("########################################################################################################################################\n");
 
             pj_pool_t *pool = call->inv->pool;
             pjmedia_sdp_media *media;
@@ -3915,15 +3915,15 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
             pjmedia_sdp_media_add_attr(media, a);
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-            for (int i=0; i<local_sdp->media_count; ++i) {
-                printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
-                for (int y=0; y<local_sdp->media[i]->attr_count; y++){
-                    printf("attr %.*s:%.*s\n",local_sdp->media[i]->attr[y]->name.slen, local_sdp->media[i]->attr[y]->name.ptr, local_sdp->media[i]->attr[y]->value.slen, local_sdp->media[i]->attr[y]->value.ptr);
-                }
-            }
-            printf("########################################################################################################################################\n");
-            printf("--------------local sdp----------------\n");
-            printf("####### Applying media count limitation. Note that in generating SDP\n");
+            // for (int i=0; i<local_sdp->media_count; ++i) {
+            //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
+            //     for (int y=0; y<local_sdp->media[i]->attr_count; y++){
+            //         printf("attr %.*s:%.*s\n",local_sdp->media[i]->attr[y]->name.slen, local_sdp->media[i]->attr[y]->name.ptr, local_sdp->media[i]->attr[y]->value.slen, local_sdp->media[i]->attr[y]->value.ptr);
+            //     }
+            // }
+            // printf("########################################################################################################################################\n");
+            // printf("--------------local sdp----------------\n");
+            // printf("####### Applying media count limitation. Note that in generating SDP\n");
 
         }
     }

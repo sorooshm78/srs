@@ -1973,7 +1973,7 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_negotiate( pj_pool_t *pool,
 {
     pj_status_t status;
 
-    printf("-------------> pjmedia_sdp_neg_negotiate\n");
+    // printf("-------------> pjmedia_sdp_neg_negotiate\n");
 
     /* Check arguments are valid. */
     PJ_ASSERT_RETURN(pool && neg, PJ_EINVAL);
@@ -1994,10 +1994,10 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_negotiate( pj_pool_t *pool,
     if (neg->has_remote_answer) {
         pjmedia_sdp_session *active;
         ////////////////////////////////////////////////////////////////
-        printf("/////////// 1.1 \n");
+        // printf("/////////// 1.1 \n");
         status = process_answer(pool, neg->neg_local_sdp, neg->neg_remote_sdp,
                                 allow_asym, &active);
-        printf("/////////// 1.1 \n");
+        // printf("/////////// 1.1 \n");
         ////////////////////////////////////////////////////////////////
         if (status == PJ_SUCCESS) {
             /* Only update active SDPs when negotiation is successfull */
@@ -2009,21 +2009,21 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_negotiate( pj_pool_t *pool,
         } else {
             /* SDP nego failed, retain the last_sdp. */
             ////////////////////////////////////////////////////////////////
-            printf("/////////// 1.2 \n");
+            // printf("/////////// 1.2 \n");
             neg->last_sent = pjmedia_sdp_session_clone(neg->pool_active,
                                                        neg->last_sent);
-            printf("/////////// 1.2 \n");
+            // printf("/////////// 1.2 \n");
             ////////////////////////////////////////////////////////////////
         }
     } else {
         pjmedia_sdp_session *answer = NULL;
         ////////////////////////////////////////////////////////////////
-        printf("/////////// 1.3 \n");
+        // printf("/////////// 1.3 \n");
         status = create_answer(pool, neg->prefer_remote_codec_order,
                                neg->answer_with_multiple_codecs,
                                neg->neg_local_sdp, neg->neg_remote_sdp,
                                &answer);
-        printf("/////////// 1.3 \n");
+        // printf("/////////// 1.3 \n");
         ////////////////////////////////////////////////////////////////
         if (status == PJ_SUCCESS) {
             /* Assign PT numbers for our answer and update the mapping. */

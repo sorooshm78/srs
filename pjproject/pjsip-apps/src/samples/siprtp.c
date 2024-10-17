@@ -611,6 +611,7 @@ static void process_incoming_call(pjsip_rx_data *rdata)
     call = &app.call[i];
 
     /* Verify that we can handle the request. */
+    printf("### 1\n");
     options = 0;
     status = pjsip_inv_verify_request(rdata, &options, NULL, NULL,
                                    app.sip_endpt, &tdata);

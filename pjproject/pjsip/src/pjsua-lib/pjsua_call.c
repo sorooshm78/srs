@@ -1329,6 +1329,7 @@ static pj_status_t verify_request(const pjsua_call *call,
         unsigned options = 0;
 
         /* Verify that we can handle the request. */
+        printf("###### Verify that we can handle the request.\n");
         status = pjsip_inv_verify_request3(rdata,
                                            call->inv->pool_prov, &options, 
                                            offer, answer, NULL, 
@@ -1518,6 +1519,8 @@ on_incoming_call_med_tp_complete(pjsua_call_id call_id,
  */
 pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 {
+    printf("### pjsua_call_on_incoming\n");
+    
     pj_str_t contact;
     pjsip_dialog *dlg = pjsip_rdata_get_dlg(rdata);
     pjsip_dialog *replaced_dlg = NULL;
@@ -5292,7 +5295,7 @@ static void call_disconnect( pjsip_inv_session *inv,
 static void pjsua_call_on_media_update(pjsip_inv_session *inv,
                                        pj_status_t status)
 {
-    printf("########### pjsua_call_on_media_update callback is call\n");
+    // printf("########### pjsua_call_on_media_update callback is call\n");
     pjsua_call *call;
     const pjmedia_sdp_session *local_sdp;
     const pjmedia_sdp_session *remote_sdp;
@@ -5306,7 +5309,7 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
 
     if (status != PJ_SUCCESS) {
-        printf("########### if not success \n");
+        // printf("########### if not success \n");
         pjsua_perror(THIS_FILE, "SDP negotiation has failed", status);
 
         /* Revert back provisional media. */
@@ -5337,9 +5340,9 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
 
 
     /* Get local and remote SDP */
-    printf("########### local pjmedia_sdp_neg_get_active_local\n");
+    // printf("########### local pjmedia_sdp_neg_get_active_local\n");
     status = pjmedia_sdp_neg_get_active_local(call->inv->neg, &local_sdp);
-    printf("########### \n");
+    // printf("########### \n");
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE,
                      "Unable to retrieve currently active local SDP",
@@ -5348,9 +5351,9 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
     }
 
-    printf("########### remote pjmedia_sdp_neg_get_active_remote\n");
+    // printf("########### remote pjmedia_sdp_neg_get_active_remote\n");
     status = pjmedia_sdp_neg_get_active_remote(call->inv->neg, &remote_sdp);
-    printf("########### \n");
+    // printf("########### \n");
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE,
                      "Unable to retrieve currently active remote SDP",
@@ -5359,14 +5362,14 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
     }
 
-    printf("############ all->med_update_success = (status == PJ_SUCCESS)\n");
+    // printf("############ all->med_update_success = (status == PJ_SUCCESS)\n");
     call->med_update_success = (status == PJ_SUCCESS);
-    printf("############\n");
+    // printf("############\n");
 
     /* Trickle ICE tasks:
      * - Check remote SDP for trickle ICE support & start sending SIP INFO.
      */
-    printf("#################### ICE Support\n");
+    // printf("#################### ICE Support\n");
     {
         unsigned i;
         for (i = 0; i < remote_sdp->media_count; ++i) {
@@ -5377,29 +5380,29 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         if (call->trickle_ice.remote_sup)
             pjsua_ice_check_start_trickling(call, PJ_FALSE, NULL);
     }
-    printf("#################### ICE Support\n");
+    // printf("#################### ICE Support\n");
 
     /* Update remote's NAT type */
-    printf("#################### Update remote's NAT type\n");
+    // printf("#################### Update remote's NAT type\n");
     if (pjsua_var.ua_cfg.nat_type_in_sdp) {
         update_remote_nat_type(call, remote_sdp);
     }
-    printf("#################### Update remote's NAT type\n");
+    // printf("#################### Update remote's NAT type\n");
 
     /* Update media channel with the new SDP */
-    printf("#################### Update media channel with the new SDP\n");
-    printf("--------------local sdp----------------\n");
-    for (int i=0; i<local_sdp->media_count; ++i) {
-        printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
-    }
-    printf("--------------local sdp----------------\n");
-    printf("--------------remote sdp----------------\n");
-    for (int i=0; i<remote_sdp->media_count; ++i) {
-        printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, remote_sdp->media[i]->desc.port);
-    }
-    printf("--------------remote sdp----------------\n");
+    // printf("#################### Update media channel with the new SDP\n");
+    // printf("--------------local sdp----------------\n");
+    // for (int i=0; i<local_sdp->media_count; ++i) {
+    //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
+    // }
+    // printf("--------------local sdp----------------\n");
+    // printf("--------------remote sdp----------------\n");
+    // for (int i=0; i<remote_sdp->media_count; ++i) {
+    //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, remote_sdp->media[i]->desc.port);
+    // }
+    // printf("--------------remote sdp----------------\n");
     status = pjsua_media_channel_update(call->index, local_sdp, remote_sdp);
-    printf("#################### Update media channel with the new SDP\n");
+    // printf("#################### Update media channel with the new SDP\n");
 
     /* If this is not the initial INVITE, don't disconnect call due to
      * no media after SDP negotiation.
