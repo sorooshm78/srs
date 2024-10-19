@@ -1329,7 +1329,7 @@ static pj_status_t verify_request(const pjsua_call *call,
         unsigned options = 0;
 
         /* Verify that we can handle the request. */
-        printf("###### Verify that we can handle the request.\n");
+        printf("------ Verify that we can handle the request.\n");
         status = pjsip_inv_verify_request3(rdata,
                                            call->inv->pool_prov, &options, 
                                            offer, answer, NULL, 
@@ -1520,13 +1520,14 @@ on_incoming_call_med_tp_complete(pjsua_call_id call_id,
 pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 {
     printf("### pjsua_call_on_incoming\n");
-    
+
     pj_str_t contact;
     pjsip_dialog *dlg = pjsip_rdata_get_dlg(rdata);
     pjsip_dialog *replaced_dlg = NULL;
     pjsip_transaction *tsx = pjsip_rdata_get_tsx(rdata);
     pjsip_msg *msg = rdata->msg_info.msg;
     pjsip_tx_data *response = NULL;
+    // options
     unsigned options = 0;
     pjsip_inv_session *inv = NULL;
     int acc_id;
@@ -1789,6 +1790,9 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     /* Verify that we can handle the request. */
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
+    options |= PJSIP_INV_SUPPORT_SIPREC;
+    printf("### option %d \n", options);
+
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
     if (pjsua_var.acc[acc_id].cfg.ice_cfg.enable_ice) {
@@ -1804,10 +1808,11 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     else if (pjsua_var.acc[acc_id].cfg.use_timer == PJSUA_SIP_TIMER_ALWAYS)
         options |= PJSIP_INV_ALWAYS_USE_TIMER;
 
+    printf("### pjsip_inv_verify_request2 option %d \n", options);
     status = pjsip_inv_verify_request2(rdata, &options, offer, NULL, NULL,
                                        pjsua_var.endpt, &response);
     if (status != PJ_SUCCESS) {
-
+        printf("############### status != PJ_SUCCESS \n");
         /*
          * No we can't handle the incoming INVITE request.
          */
@@ -1823,13 +1828,15 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         } else {
             /* Respond with 500 (Internal Server Error) */
             ret_st_code = PJSIP_SC_INTERNAL_SERVER_ERROR;
+
             pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
                                 NULL, NULL, NULL, NULL);
         }
 
         goto on_return;
     }
-
+    printf("############### status == PJ_SUCCESS \n");
+    
     /* Get suitable Contact header */
     if (pjsua_var.acc[acc_id].contact.slen) {
         contact = pjsua_var.acc[acc_id].contact;
@@ -1966,6 +1973,8 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
          * codec support and the capability to handle the required
          * SIP extensions.
          */
+        printf("########## (offer || replaced_dlg)\n");
+        printf("########## verify_request\n");
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
 

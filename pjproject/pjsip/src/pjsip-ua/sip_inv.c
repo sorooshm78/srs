@@ -266,7 +266,6 @@ static pj_status_t mod_inv_load(pjsip_endpoint *endpt)
     /* Register "application/sdp" in Accept header */
     pjsip_endpt_add_capability(endpt, &mod_inv.mod, PJSIP_H_ACCEPT, NULL,
                                1, &accepted);
-
     return PJ_SUCCESS;
 }
 
@@ -1251,6 +1250,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
+    printf("###### pjsip_inv_verify_request3\n");
     pjsip_msg *msg = NULL;
     pjsip_allow_hdr *allow = NULL;
     pjsip_supported_hdr *sup_hdr = NULL;
@@ -1269,6 +1269,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
     PJ_ASSERT_RETURN(tmp_pool != NULL && options != NULL, PJ_EINVAL);
    
     /* Normalize options */
+    printf("### Normalize option %u \n", *options);
     if (*options & PJSIP_INV_REQUIRE_100REL)
         *options |= PJSIP_INV_SUPPORT_100REL;
     if (*options & PJSIP_INV_REQUIRE_TIMER)
@@ -1279,6 +1280,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         *options |= PJSIP_INV_SUPPORT_TRICKLE_ICE;
     if (*options & PJSIP_INV_REQUIRE_SIPREC)
         *options |= PJSIP_INV_SUPPORT_SIPREC;
+    printf("### Normalize option %u \n", *options);
 
     if (rdata) {
         /* Get the message in rdata */
@@ -1471,6 +1473,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         }
     }
 
+    printf("#### options %u \n", *options);
     /* Check supported methods, see if peer supports UPDATE.
      * We just assume that peer supports standard INVITE, ACK, CANCEL, and BYE
      * implicitly by sending this INVITE.
@@ -1489,6 +1492,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         }
 
         if (i != allow->count) {
+            printf("######### UPDATE is present in Allow\n");
             /* UPDATE is present in Allow */
             *options |= PJSIP_INV_SUPPORT_UPDATE;
         }
@@ -1527,7 +1531,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
     }
     if (req_hdr) {
         printf("########## Requird Header \n");
-        // const pj_str_t STR_SIPREC = { "siprec", 6 };
         unsigned i;
         const pj_str_t STR_100REL = { "100rel", 6};
         const pj_str_t STR_REPLACES = { "replaces", 8 };
@@ -1539,7 +1542,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         pj_str_t unsupp_tags[PJSIP_GENERIC_ARRAY_MAX_COUNT];
         
         for (i=0; i<req_hdr->count; ++i) {
-            printf("######### Headers : %.*s \n", req_hdr->values[i].slen, req_hdr->values[i].ptr);
+            printf("######### Options: %u //// Headers: %.*s \n", *options, req_hdr->values[i].slen, req_hdr->values[i].ptr);
 
             if ((*options & PJSIP_INV_SUPPORT_100REL) && 
                 pj_stricmp(&req_hdr->values[i], &STR_100REL)==0)
@@ -1586,7 +1589,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
 
         /* Check if there are required tags that we don't support */
         if (unsupp_cnt) {
-
+            printf("########### Check if there are required tags that we don't support \n");
             code = PJSIP_SC_BAD_EXTENSION;
             status = PJSIP_ERRNO_FROM_SIP_STATUS(code);
 
@@ -1618,6 +1621,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
             goto on_return;
         }
     }
+    printf("#### options %u \n", *options);
 
     /* Check if there are local requirements that are not supported
      * by peer.
@@ -1629,6 +1633,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                  ((*options & PJSIP_INV_REQUIRE_TRICKLE_ICE)!=0 && 
                   (rem_option & PJSIP_INV_SUPPORT_TRICKLE_ICE)==0)))
     {
+        printf("Check if there are local requirements that are not supported \n");
         code = PJSIP_SC_EXTENSION_REQUIRED;
         status = PJSIP_ERRNO_FROM_SIP_STATUS(code);
 
@@ -1662,10 +1667,12 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
 
         goto on_return;
     }
+    printf("#### options %u \n", *options);
 
     /* If remote Require something that we support, make us Require
      * that feature too.
      */
+    printf("#### B options %u \n", *options);
     if (rem_option & PJSIP_INV_REQUIRE_100REL) {
             pj_assert(*options & PJSIP_INV_SUPPORT_100REL);
             *options |= PJSIP_INV_REQUIRE_100REL;
@@ -1678,6 +1685,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
             pj_assert(*options & PJSIP_INV_SUPPORT_TRICKLE_ICE);
             *options |= PJSIP_INV_REQUIRE_TRICKLE_ICE;
     }
+    printf("#### A options %u \n", *options);
 
 on_return:
 
@@ -1739,6 +1747,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request2(pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
+    printf("###### pjsip_inv_verify_request2\n");
     return pjsip_inv_verify_request3(rdata, rdata->tp_info.pool,
                                      options, r_sdp, l_sdp, dlg, 
                                      endpt, p_tdata);
@@ -1755,6 +1764,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request( pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
+    printf("###### pjsip_inv_verify_request\n");
     return pjsip_inv_verify_request3(rdata, rdata->tp_info.pool,
                                      options, NULL, l_sdp, dlg, 
                                      endpt, p_tdata);

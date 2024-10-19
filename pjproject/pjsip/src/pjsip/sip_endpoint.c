@@ -330,6 +330,8 @@ PJ_DEF(const pjsip_hdr*) pjsip_endpt_get_capability( pjsip_endpoint *endpt,
 /*
  * Check if the specified capability is supported.
  */
+// pjsip_endpt_add_capability
+// pjsip_endpt_add_capability
 PJ_DEF(pj_bool_t) pjsip_endpt_has_capability( pjsip_endpoint *endpt,
                                               int htype,
                                               const pj_str_t *hname,
@@ -345,11 +347,16 @@ PJ_DEF(pj_bool_t) pjsip_endpt_has_capability( pjsip_endpoint *endpt,
 
     PJ_ASSERT_RETURN(token != NULL, PJ_FALSE);
 
+    printf("###### for \n");
     for (i=0; i<hdr->count; ++i) {
+        printf("------------------ \n");
+        printf("###### hdr: %.*s \n", hdr->values[i].slen, hdr->values[i].ptr);
+        printf("###### token: %.*s \n", token->slen, token->ptr);
         if (!pj_stricmp(&hdr->values[i], token))
             return PJ_TRUE;
     }
 
+    printf("###### return false \n");
     return PJ_FALSE;
 }
 
