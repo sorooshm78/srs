@@ -579,10 +579,6 @@ PJ_DEF(pj_status_t) pjsip_timer_init_module(pjsip_endpoint *endpt)
         return status;
 
     /* Register 'timer' capability to endpoint */
-    static const pj_str_t STR_SIPREC         = {"siprec", 6};
-    status = pjsip_endpt_add_capability(endpt, NULL, PJSIP_H_SUPPORTED,
-                                        NULL, 1, &STR_SIPREC);
-
     status = pjsip_endpt_add_capability(endpt, NULL, PJSIP_H_SUPPORTED,
                                         NULL, 1, &STR_TIMER);
     if (status != PJ_SUCCESS)

@@ -19,6 +19,7 @@
 #include <pjsip-ua/sip_inv.h>
 #include <pjsip-ua/sip_100rel.h>
 #include <pjsip-ua/sip_timer.h>
+#include <pjsip-ua/sip_siprec.h>
 #include <pjsip/print_util.h>
 #include <pjsip/sip_module.h>
 #include <pjsip/sip_endpoint.h>
