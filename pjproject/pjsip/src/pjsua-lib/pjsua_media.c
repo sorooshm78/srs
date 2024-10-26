@@ -2359,10 +2359,8 @@ pj_status_t pjsua_media_channel_init(pjsua_call_id call_id,
         /* We are sending answer, check media count for each media type
          * from the remote SDP.
          */
-        printf("UUUUUUUUUUUUUUUU maudcnt:%d      mtotaudcnt:%d \n", maudcnt, mtotaudcnt);
         sort_media(rem_sdp, &STR_AUDIO, acc->cfg.use_srtp,
                    maudidx, &maudcnt, &mtotaudcnt);
-        printf("UUUUUUUUUUUUUUUU maudcnt:%d      mtotaudcnt:%d \n", maudcnt, mtotaudcnt);
 
 #if PJMEDIA_HAS_VIDEO
         sort_media(rem_sdp, &STR_VIDEO, acc->cfg.use_srtp,
@@ -2384,8 +2382,6 @@ pj_status_t pjsua_media_channel_init(pjsua_call_id call_id,
          * must never decrease. Also note that we shouldn't apply the media
          * count setting (of the call setting) before the SDP negotiation.
          */
-        printf("pppppppppppp call->med_prov_cnt %d \n", call->med_prov_cnt);
-        printf("pppppppppppp rem_sdp->media_count %d \n", rem_sdp->media_count);
         if (call->med_prov_cnt < rem_sdp->media_count)
             call->med_prov_cnt = PJ_MIN(rem_sdp->media_count,
                                         PJSUA_MAX_CALL_MEDIA);
@@ -2666,16 +2662,13 @@ on_error:
  * updating media count (via call setting), media channel must be reinit'd
  * (using pjsua_media_channel_init()) first before calling this function.
  */
-// rem_sdp -> offer
-// p_sdp -> answer
-//P00
+//Problem
 pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id, 
                                            pj_pool_t *pool,
                                            const pjmedia_sdp_session *rem_sdp,
                                            pjmedia_sdp_session **p_sdp,
                                            int *sip_err_code)
 {
-    printf("MMMMMMMMMMMMMMMMMMM pjsua_media_channel_create_sdp\n");
     enum { MAX_MEDIA = PJSUA_MAX_CALL_MEDIA };
     pjmedia_sdp_session *sdp;
     pj_sockaddr origin;
@@ -2899,7 +2892,7 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
             continue;
         }
         
-        //P00
+        //Problem
         m->attr[m->attr_count++] = pjmedia_sdp_attr_create_label(rem_sdp->media[mi]);
 
         /* Add ssrc and cname attribute */
@@ -3841,19 +3834,14 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
         ((maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt) ||
         (acc->cfg.rtcp_fb_cfg.cap_count)))
     {
-        // printf("################# We need to re-nego SDP or modify our answer when\n");
         pjmedia_sdp_session *local_sdp_renego = NULL;
 
-
-        // printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
         local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);
-        // printf("################# local_sdp_renego = pjmedia_sdp_session_clone(tmp_pool, local_sdp);\n");
         local_sdp = local_sdp_renego;
         need_renego_sdp = PJ_TRUE;
 
         /* Add RTCP-FB info into local SDP answer */
         if (acc->cfg.rtcp_fb_cfg.cap_count) {
-            // printf("####### Add RTCP-FB info into local SDP answer\n");
             for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
                 status = pjmedia_rtcp_fb_encode_sdp(
                                         tmp_pool, pjsua_var.med_endpt,
@@ -3872,18 +3860,9 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
          * answer, no media count limitation applied as we didn't know yet
          * which media would pass the SDP negotiation.
          */
-        /////////Problem
-        // printf("############## if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt) \n");
-        // printf("############## maudcnt:%d     mvidcnt:%d \n", maudcnt, mvidcnt);
-        // printf("############## call->opt.aud_cnt:%d     call->opt.vid_cnt:%d \n", call->opt.aud_cnt, call->opt.vid_cnt);
+        //Problem
         if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt)
         {
-            // printf("####### Applying media count limitation. Note that in generating SDP\n");
-
-            // maudcnt = PJ_MIN(maudcnt, call->opt.aud_cnt);
-            // mvidcnt = PJ_MIN(mvidcnt, call->opt.vid_cnt);
-            // printf("############## maudcnt:%d     mvidcnt:%d \n", maudcnt, mvidcnt);
-
             // for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
             //     pjmedia_sdp_media *m = local_sdp_renego->media[mi];
 
@@ -3898,8 +3877,6 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
             //     /* Deactivate this excess media */
             //     pjmedia_sdp_media_deactivate(tmp_pool, m);
             // }
-            // printf("--------------local sdp----------------\n");
-            // printf("########################################################################################################################################\n");
 
             pj_pool_t *pool = call->inv->pool;
             pjmedia_sdp_media *media;
@@ -3926,17 +3903,6 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
             // a = pjmedia_sdp_attr_create(pool, "label", &label1);
             // pjmedia_sdp_media_add_attr(media, a);
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-            // for (int i=0; i<local_sdp->media_count; ++i) {
-            //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
-            //     for (int y=0; y<local_sdp->media[i]->attr_count; y++){
-            //         printf("attr %.*s:%.*s\n",local_sdp->media[i]->attr[y]->name.slen, local_sdp->media[i]->attr[y]->name.ptr, local_sdp->media[i]->attr[y]->value.slen, local_sdp->media[i]->attr[y]->value.ptr);
-            //     }
-            // }
-            // printf("########################################################################################################################################\n");
-            // printf("--------------local sdp----------------\n");
-            // printf("####### Applying media count limitation. Note that in generating SDP\n");
-
         }
     }
 

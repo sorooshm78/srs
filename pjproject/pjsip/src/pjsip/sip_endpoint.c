@@ -347,16 +347,11 @@ PJ_DEF(pj_bool_t) pjsip_endpt_has_capability( pjsip_endpoint *endpt,
 
     PJ_ASSERT_RETURN(token != NULL, PJ_FALSE);
 
-    printf("###### for \n");
     for (i=0; i<hdr->count; ++i) {
-        printf("------------------ \n");
-        printf("###### hdr: %.*s \n", hdr->values[i].slen, hdr->values[i].ptr);
-        printf("###### token: %.*s \n", token->slen, token->ptr);
         if (!pj_stricmp(&hdr->values[i], token))
             return PJ_TRUE;
     }
 
-    printf("###### return false \n");
     return PJ_FALSE;
 }
 

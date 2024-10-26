@@ -431,8 +431,6 @@ static pj_status_t
 on_make_call_med_tp_complete(pjsua_call_id call_id,
                              const pjsua_med_tp_state_info *info)
 {
-    printf("MMMMMMMMMMMMMMMMMMMMMMMMMMM on_make_call_med_tp_complete\n");
-    
     pjmedia_sdp_session *offer = NULL;
     pjsip_inv_session *inv = NULL;
     pjsua_call *call = &pjsua_var.calls[call_id];
@@ -1286,7 +1284,6 @@ static pj_status_t verify_request(const pjsua_call *call,
                                   int *sip_err_code,
                                   pjsip_tx_data **response)
 {
-    printf("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  verify_request\n");
     const pjmedia_sdp_session *offer = NULL;
     pjmedia_sdp_session *answer;    
     int err_code = 0;
@@ -1312,8 +1309,7 @@ static pj_status_t verify_request(const pjsua_call *call,
             pjsua_perror(THIS_FILE, "Error creating SDP answer", status);
         }
     } else {
-        //P00
-        printf("MMMMMMMMMMMMMMMM call pjsua_media_channel_create_sdp \n");
+        //Problem
         status = pjsua_media_channel_create_sdp(call->index,
                                                 call->async_call.dlg->pool,
                                                 offer, &answer, sip_err_code);
@@ -1334,7 +1330,6 @@ static pj_status_t verify_request(const pjsua_call *call,
         unsigned options = 0;
 
         /* Verify that we can handle the request. */
-        printf("------ Verify that we can handle the request.\n");
         status = pjsip_inv_verify_request3(rdata,
                                            call->inv->pool_prov, &options, 
                                            offer, answer, NULL, 
@@ -1522,11 +1517,8 @@ on_incoming_call_med_tp_complete(pjsua_call_id call_id,
  * Handle incoming INVITE request.
  * Called by pjsua_core.c
  */
-//Start
 pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 {
-    printf("### pjsua_call_on_incoming\n");
-
     pj_str_t contact;
     pjsip_dialog *dlg = pjsip_rdata_get_dlg(rdata);
     pjsip_dialog *replaced_dlg = NULL;
@@ -1788,15 +1780,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
                                 &st_reason, NULL, NULL, NULL);
             goto on_return;
         }
-
-        // verify exist lable
-        // pj_str_t STR_LABEL = { "label", 5 };
-        // for (int i=0; i<offer->media_count; i++){
-        //     pjmedia_sdp_attr *label_attr = pjmedia_sdp_media_find_attr(offer->media[i], &STR_LABEL, NULL);
-        //     printf("######################### %.*s:%.*s \n", label_attr->name.slen, label_attr->name.ptr, label_attr->value.slen, label_attr->value.ptr);
-        //     printf("######################### Port:%d \n", offer->media[i]->desc.port);
-        // }
-
     } else {
         offer = NULL;
     }
@@ -1805,7 +1788,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
     options |= PJSIP_INV_SUPPORT_SIPREC;
-    printf("### option %d \n", options);
 
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
@@ -1822,11 +1804,9 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     else if (pjsua_var.acc[acc_id].cfg.use_timer == PJSUA_SIP_TIMER_ALWAYS)
         options |= PJSIP_INV_ALWAYS_USE_TIMER;
 
-    printf("### pjsip_inv_verify_request2 option %d \n", options);
     status = pjsip_inv_verify_request2(rdata, &options, offer, NULL, NULL,
                                        pjsua_var.endpt, &response);
     if (status != PJ_SUCCESS) {
-        printf("############### status != PJ_SUCCESS \n");
         /*
          * No we can't handle the incoming INVITE request.
          */
@@ -1849,7 +1829,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 
         goto on_return;
     }
-    printf("############### status == PJ_SUCCESS \n");
     
     /* Get suitable Contact header */
     if (pjsua_var.acc[acc_id].contact.slen) {
@@ -1981,15 +1960,12 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * For incoming call without SDP offer, media channel init will be done
      * in pjsua_call_answer(), see ticket #1526.
      */
-    //S1
     if (offer || replaced_dlg) {
 
         /* This is only for initial verification, it will check the SDP for
          * codec support and the capability to handle the required
          * SIP extensions.
          */
-        printf("########## (offer || replaced_dlg)\n");
-        printf("########## verify_request\n");
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
 
@@ -2016,8 +1992,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             call->async_call.dlg = NULL;
             goto on_return;
         }        
-        //S2
-        printf("oooooooooooo s2\n");
         status = pjsua_media_channel_init(call->index, PJSIP_ROLE_UAS,
                                           call->secure_level,
                                           rdata->tp_info.pool,
@@ -2032,7 +2006,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
              */
             should_dec_dlg = PJ_FALSE;
         } else  if (status == PJ_SUCCESS) {
-            printf("XXXXXXXXXXXXXXX status = pjsua_media_channel_init => success \n");
             /* on_incoming_call_med_tp_complete2() will call
              * pjsip_dlg_dec_session().
              */
@@ -2137,23 +2110,8 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * callback is called, which is not right).
      */
     
-    //P1
-    // there is response is null
     status = pjsip_inv_initial_answer(inv, rdata,
                                       100, NULL, NULL, &response);
-    // there is response is initial
-
-    // printf("FFFFFFFFFFFFFFFFFF response \n");
-    // char buf[1024];                        // Allocate a buffer to store the printed message
-    // pj_size_t size = sizeof(buf);   
-    // int result = response->msg->body->print_body(response->msg->body, buf, size);
-    // if (result >= 0) {
-    //     printf("Message body: %s\n", buf);
-    // } else {
-    //     fprintf(stderr, "Failed to print message body\n");
-    // }
-    // printf("FFFFFFFFFFFFFFFFFF response \n");
-    
     if (status != PJ_SUCCESS) {
         if (response == NULL) {
             pjsua_perror(THIS_FILE, "Unable to send answer to incoming INVITE",
@@ -2174,7 +2132,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 
     } else {
 #if !PJSUA_DISABLE_AUTO_SEND_100
-        printf("response=success and if !PJSUA_DISABLE_AUTO_SEND_100=true \n");
         status = pjsip_inv_send_msg(inv, response);
         if (status != PJ_SUCCESS) {
             pjsua_perror(THIS_FILE, "Unable to send 100 response", status);
@@ -2908,20 +2865,8 @@ PJ_DEF(pj_status_t) pjsua_call_answer2(pjsua_call_id call_id,
         reason = NULL;
 
     /* Create response message */
-    // THIS
     status = pjsip_inv_answer(call->inv, code, reason, NULL, &tdata);
     
-    // printf("//////////////////////////////////////////////////////////////////\n");
-    // char buffer[1024];  // Adjust the buffer size as needed
-    // int result;
-    // result = tdata->msg->body->print_body(tdata->msg->body, buffer, sizeof(buffer));
-    // if (result >= 0) {
-    //     printf("Message body:\n%.*s\n", 1024, buffer);
-    // }  else {
-    //     printf("Buffer size is not sufficient to print the entire message body.\n");
-    // }
-    // printf("//////////////////////////////////////////////////////////////////\n");
-
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE, "Error creating response",
                      status);
@@ -5342,7 +5287,6 @@ static void call_disconnect( pjsip_inv_session *inv,
 static void pjsua_call_on_media_update(pjsip_inv_session *inv,
                                        pj_status_t status)
 {
-    // printf("########### pjsua_call_on_media_update callback is call\n");
     pjsua_call *call;
     const pjmedia_sdp_session *local_sdp;
     const pjmedia_sdp_session *remote_sdp;
@@ -5356,7 +5300,6 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
 
     if (status != PJ_SUCCESS) {
-        // printf("########### if not success \n");
         pjsua_perror(THIS_FILE, "SDP negotiation has failed", status);
 
         /* Revert back provisional media. */
@@ -5387,9 +5330,7 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
 
 
     /* Get local and remote SDP */
-    // printf("########### local pjmedia_sdp_neg_get_active_local\n");
     status = pjmedia_sdp_neg_get_active_local(call->inv->neg, &local_sdp);
-    // printf("########### \n");
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE,
                      "Unable to retrieve currently active local SDP",
@@ -5398,9 +5339,7 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
     }
 
-    // printf("########### remote pjmedia_sdp_neg_get_active_remote\n");
     status = pjmedia_sdp_neg_get_active_remote(call->inv->neg, &remote_sdp);
-    // printf("########### \n");
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE,
                      "Unable to retrieve currently active remote SDP",
@@ -5409,14 +5348,11 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
     }
 
-    // printf("############ all->med_update_success = (status == PJ_SUCCESS)\n");
     call->med_update_success = (status == PJ_SUCCESS);
-    // printf("############\n");
 
     /* Trickle ICE tasks:
      * - Check remote SDP for trickle ICE support & start sending SIP INFO.
      */
-    // printf("#################### ICE Support\n");
     {
         unsigned i;
         for (i = 0; i < remote_sdp->media_count; ++i) {
@@ -5427,29 +5363,14 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         if (call->trickle_ice.remote_sup)
             pjsua_ice_check_start_trickling(call, PJ_FALSE, NULL);
     }
-    // printf("#################### ICE Support\n");
 
     /* Update remote's NAT type */
-    // printf("#################### Update remote's NAT type\n");
     if (pjsua_var.ua_cfg.nat_type_in_sdp) {
         update_remote_nat_type(call, remote_sdp);
     }
-    // printf("#################### Update remote's NAT type\n");
 
     /* Update media channel with the new SDP */
-    // printf("#################### Update media channel with the new SDP\n");
-    // printf("--------------local sdp----------------\n");
-    // for (int i=0; i<local_sdp->media_count; ++i) {
-    //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, local_sdp->media[i]->desc.port);
-    // }
-    // printf("--------------local sdp----------------\n");
-    // printf("--------------remote sdp----------------\n");
-    // for (int i=0; i<remote_sdp->media_count; ++i) {
-    //     printf("$$$$$$$$$$$$$ i:%d  Port:%d\n", i, remote_sdp->media[i]->desc.port);
-    // }
-    // printf("--------------remote sdp----------------\n");
     status = pjsua_media_channel_update(call->index, local_sdp, remote_sdp);
-    // printf("#################### Update media channel with the new SDP\n");
 
     /* If this is not the initial INVITE, don't disconnect call due to
      * no media after SDP negotiation.

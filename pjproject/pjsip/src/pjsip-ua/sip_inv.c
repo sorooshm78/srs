@@ -1251,7 +1251,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
-    printf("###### pjsip_inv_verify_request3\n");
     pjsip_msg *msg = NULL;
     pjsip_allow_hdr *allow = NULL;
     pjsip_supported_hdr *sup_hdr = NULL;
@@ -1270,7 +1269,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
     PJ_ASSERT_RETURN(tmp_pool != NULL && options != NULL, PJ_EINVAL);
    
     /* Normalize options */
-    printf("### Normalize option %u \n", *options);
     if (*options & PJSIP_INV_REQUIRE_100REL)
         *options |= PJSIP_INV_SUPPORT_100REL;
     if (*options & PJSIP_INV_REQUIRE_TIMER)
@@ -1281,7 +1279,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         *options |= PJSIP_INV_SUPPORT_TRICKLE_ICE;
     if (*options & PJSIP_INV_REQUIRE_SIPREC)
         *options |= PJSIP_INV_SUPPORT_SIPREC;
-    printf("### Normalize option %u \n", *options);
 
     if (rdata) {
         /* Get the message in rdata */
@@ -1474,7 +1471,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         }
     }
 
-    printf("#### options %u \n", *options);
     /* Check supported methods, see if peer supports UPDATE.
      * We just assume that peer supports standard INVITE, ACK, CANCEL, and BYE
      * implicitly by sending this INVITE.
@@ -1493,7 +1489,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         }
 
         if (i != allow->count) {
-            printf("######### UPDATE is present in Allow\n");
             /* UPDATE is present in Allow */
             *options |= PJSIP_INV_SUPPORT_UPDATE;
         }
@@ -1506,7 +1501,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                   pjsip_msg_find_hdr(msg, PJSIP_H_SUPPORTED, NULL);
     }
     if (sup_hdr) {
-        printf("########## Supported Header \n");
         unsigned i;
         const pj_str_t STR_100REL = { "100rel", 6};
         const pj_str_t STR_TIMER = { "timer", 5};
@@ -1531,7 +1525,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                   pjsip_msg_find_hdr(msg, PJSIP_H_REQUIRE, NULL);
     }
     if (req_hdr) {
-        printf("########## Requird Header \n");
         unsigned i;
         const pj_str_t STR_100REL = { "100rel", 6};
         const pj_str_t STR_REPLACES = { "replaces", 8 };
@@ -1543,8 +1536,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         pj_str_t unsupp_tags[PJSIP_GENERIC_ARRAY_MAX_COUNT];
         
         for (i=0; i<req_hdr->count; ++i) {
-            printf("######### Options: %u //// Headers: %.*s \n", *options, req_hdr->values[i].slen, req_hdr->values[i].ptr);
-
             if ((*options & PJSIP_INV_SUPPORT_100REL) && 
                 pj_stricmp(&req_hdr->values[i], &STR_100REL)==0)
             {
@@ -1580,17 +1571,14 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
             } else if (!pjsip_endpt_has_capability(endpt, PJSIP_H_SUPPORTED,
                                                    NULL, &req_hdr->values[i]))
             {
-                printf("########## not suppport %.*s \n", req_hdr->values[i].slen, req_hdr->values[i].ptr);
                 /* Unknown/unsupported extension tag!  */
                 unsupp_tags[unsupp_cnt++] = req_hdr->values[i];
             }
         }   
 
-        printf("############ unsupp_cnt: %d \n", unsupp_cnt);
 
         /* Check if there are required tags that we don't support */
         if (unsupp_cnt) {
-            printf("########### Check if there are required tags that we don't support \n");
             code = PJSIP_SC_BAD_EXTENSION;
             status = PJSIP_ERRNO_FROM_SIP_STATUS(code);
 
@@ -1622,7 +1610,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
             goto on_return;
         }
     }
-    printf("#### options %u \n", *options);
 
     /* Check if there are local requirements that are not supported
      * by peer.
@@ -1634,7 +1621,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                  ((*options & PJSIP_INV_REQUIRE_TRICKLE_ICE)!=0 && 
                   (rem_option & PJSIP_INV_SUPPORT_TRICKLE_ICE)==0)))
     {
-        printf("Check if there are local requirements that are not supported \n");
         code = PJSIP_SC_EXTENSION_REQUIRED;
         status = PJSIP_ERRNO_FROM_SIP_STATUS(code);
 
@@ -1668,12 +1654,10 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
 
         goto on_return;
     }
-    printf("#### options %u \n", *options);
 
     /* If remote Require something that we support, make us Require
      * that feature too.
      */
-    printf("#### B options %u \n", *options);
     if (rem_option & PJSIP_INV_REQUIRE_100REL) {
             pj_assert(*options & PJSIP_INV_SUPPORT_100REL);
             *options |= PJSIP_INV_REQUIRE_100REL;
@@ -1686,7 +1670,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
             pj_assert(*options & PJSIP_INV_SUPPORT_TRICKLE_ICE);
             *options |= PJSIP_INV_REQUIRE_TRICKLE_ICE;
     }
-    printf("#### A options %u \n", *options);
 
 on_return:
 
@@ -1748,7 +1731,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request2(pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
-    printf("###### pjsip_inv_verify_request2\n");
     return pjsip_inv_verify_request3(rdata, rdata->tp_info.pool,
                                      options, r_sdp, l_sdp, dlg, 
                                      endpt, p_tdata);
@@ -1765,7 +1747,6 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request( pjsip_rx_data *rdata,
                                               pjsip_endpoint *endpt,
                                               pjsip_tx_data **p_tdata)
 {
-    printf("###### pjsip_inv_verify_request\n");
     return pjsip_inv_verify_request3(rdata, rdata->tp_info.pool,
                                      options, NULL, l_sdp, dlg, 
                                      endpt, p_tdata);
@@ -2050,11 +2031,10 @@ PJ_DEF(pj_status_t) pjsip_create_multipart_sdp_body(pj_pool_t *pool,
     return PJ_SUCCESS;
 }
 
-//////////////////////////////////////////////////////////// 
+
 static pjsip_msg_body *create_sdp_body(pj_pool_t *pool,
                                        const pjmedia_sdp_session *c_sdp)
 {
-    // printf("||||||||||||||||||||||||||||||||||||||||||||||| start create_sdp_body\n");
     pjsip_msg_body *body;
     pj_status_t status;
 
@@ -2065,7 +2045,6 @@ static pjsip_msg_body *create_sdp_body(pj_pool_t *pool,
     if (status != PJ_SUCCESS)
         return NULL;
 
-    // printf("||||||||||||||||||||||||||||||||||||||||||||||| end create_sdp_body\n");
     return body;
 }
 
@@ -2279,22 +2258,16 @@ static pj_status_t inv_negotiate_sdp( pjsip_inv_session *inv )
 {
     pj_status_t status;
 
-    // printf("00000000000000000000000000000000000000000000 \n");
     PJ_ASSERT_RETURN(pjmedia_sdp_neg_get_state(inv->neg) ==
                      PJMEDIA_SDP_NEG_STATE_WAIT_NEGO, 
                      PJMEDIA_SDPNEG_EINSTATE);
 
-    // printf("1 \n");
     status = pjmedia_sdp_neg_negotiate(inv->pool_prov, inv->neg, 0);
-    // printf("1 \n");
 
     PJ_PERROR(4,(inv->obj_name, status, "SDP negotiation done"));
 
-    /////////////////////// comment this code 
     if (mod_inv.cb.on_media_update && inv->notify){
-        // printf("---------------------- 2 \n");
         (*mod_inv.cb.on_media_update)(inv, status);
-        // printf("---------------------- 2 \n");
     }
 
     /* Invite session may have been terminated by the application even 
@@ -2302,27 +2275,19 @@ static pj_status_t inv_negotiate_sdp( pjsip_inv_session *inv )
      * codec is present in the offer (see ticket #1034).
      */
     if (inv->state != PJSIP_INV_STATE_DISCONNECTED) {
-        // printf("3 \n");
 
         /* Swap the flip-flop pool when SDP negotiation success. */
         if (status == PJ_SUCCESS) {
-            // printf("4 \n");
             swap_pool(&inv->pool_prov, &inv->pool_active);
-            // printf("4 \n");
         }
 
         /* Reset the provisional pool regardless SDP negotiation result. */
-        // printf("5 \n");
         pj_pool_reset(inv->pool_prov);
-        // printf("5 \n");
 
     } else {
-        // printf("6 \n");
         status = PJSIP_ERRNO_FROM_SIP_STATUS(inv->cause);
-        // printf("6 \n");
     }
 
-    // printf("00000000000000000000000000000000000000000000 \n");
     return status;
 }
 
@@ -2589,7 +2554,6 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
                                    pjsip_tx_data *tdata,
                                    const pjmedia_sdp_session *local_sdp)
 {
-    // printf("START process_answer >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     pj_status_t status;
     const pjmedia_sdp_session *sdp = NULL;
 
@@ -2597,7 +2561,6 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
      * offer before. 
      */
     if (local_sdp && (st_code/100==1 || st_code/100==2)) {
-        // printf("if (local_sdp && (st_code/100==1 || st_code/100==2))\n");
         if (inv->neg == NULL) {
             status = pjmedia_sdp_neg_create_w_local_offer(inv->pool, 
                                                           local_sdp,
@@ -2615,7 +2578,6 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
         }
 
         if (status != PJ_SUCCESS){
-            // printf("END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
             return status;
         }
 
@@ -2624,7 +2586,6 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
 
      /* If SDP negotiator is ready, start negotiation. */
     if (st_code/100==2 || (st_code/10==18 && st_code!=180 && st_code!=181)) {
-        // printf("if (st_code/100==2 || (st_code/10==18 && st_code!=180 && st_code!=181))\n");
         pjmedia_sdp_neg_state neg_state;
 
         /* Start nego when appropriate. */
@@ -2633,49 +2594,26 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
 
         if (neg_state == PJMEDIA_SDP_NEG_STATE_LOCAL_OFFER) {
             status = pjmedia_sdp_neg_get_neg_local(inv->neg, &sdp);
-            // printf(" if (neg_state == PJMEDIA_SDP_NEG_STATE_LOCAL_OFFER) {\n");
-            // printf("@@--------------------------------------\n");
-            for (int i=0; i<sdp->media_count; ++i) {
-                // printf("!!! i: %d Port: %d\n", i, sdp->media[i]->desc.port);
-            }
-            // printf("@@--------------------------------------\n");
 
         } else if (neg_state == PJMEDIA_SDP_NEG_STATE_WAIT_NEGO &&
                    pjmedia_sdp_neg_has_local_answer(inv->neg) )
         {
-            // printf("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\n");
             struct tsx_inv_data *tsx_inv_data;
 
-            // printf("WWWW 2608\n");
             /* Get invite session's transaction data */
             tsx_inv_data = (struct tsx_inv_data*) 
                            inv->invite_tsx->mod_data[mod_inv.mod.id];
-            // printf("WWWW 2608\n");
 
-            // printf("WWWW 2614\n");
-            // THIS
             status = inv_negotiate_sdp(inv);
-            // printf("WWWW 2614\n");
             if (status != PJ_SUCCESS){
-                // printf("END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+
                 return status;
             }
             
             /* Mark this transaction has having SDP offer/answer done. */
-            // printf("WWWW 2623\n");
             tsx_inv_data->sdp_done = 1;
-            // printf("WWWW 2623\n");
 
-            // printf("??????? Before\n");
             status = pjmedia_sdp_neg_get_active_local(inv->neg, &sdp);
-            // printf("??????? After\n");
-
-            // printf("@@@--------------------------------------\n");
-            // for (int i=0; i<sdp->media_count; ++i) {
-            //     printf("!!! i: %d Port: %d\n", i, sdp->media[i]->desc.port);
-            // }
-            // printf("@@@--------------------------------------\n");
-            // printf("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW\n");
         }
     }
 
@@ -2691,20 +2629,8 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
 
 
     if (sdp) {
-        // printf("if (sdp) \n");
         tdata->msg->body = create_sdp_body(tdata->pool, sdp);
-        // printf("############################################################\n");
-        // char buffer[1024];  // Adjust the buffer size as needed
-        // int result;
-        // result = tdata->msg->body->print_body(tdata->msg->body, buffer, sizeof(buffer));
-        // if (result >= 0) {
-        //     printf("Message body:\n%.*s\n", 1024, buffer);
-        // }  else {
-        //     printf("Buffer size is not sufficient to print the entire message body.\n");
-        // }
-        // printf("############################################################\n");
     } else {
-        // printf("else (sdp) \n");
         if (inv->options & PJSIP_INV_REQUIRE_100REL) {
             tdata->msg->body = NULL;
         }
@@ -2715,16 +2641,13 @@ static pj_status_t process_answer( pjsip_inv_session *inv,
     if (st_code >= 300 && inv->neg != NULL &&
         inv->state == PJSIP_INV_STATE_CONFIRMED)
     {
-        // printf(" if (st_code >= 300 && inv->neg != NULL && inv->state == PJSIP_INV_STATE_CONFIRMED) \n");
         pjmedia_sdp_neg_state neg_state;
         neg_state = pjmedia_sdp_neg_get_state(inv->neg);
         if (neg_state == PJMEDIA_SDP_NEG_STATE_REMOTE_OFFER) {
-            // printf("if (neg_state == PJMEDIA_SDP_NEG_STATE_REMOTE_OFFER)\n");
             pjmedia_sdp_neg_cancel_offer(inv->neg);
         }
     }
 
-    // printf("END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     return PJ_SUCCESS;
 }
 
@@ -2860,28 +2783,15 @@ PJ_DEF(pj_status_t) pjsip_inv_answer(   pjsip_inv_session *inv,
     }
 
     /* Process SDP in answer */
-    // printf("\n\n ######## process answer\n\n");
     status = process_answer(inv, st_code, last_res, local_sdp);
     if (status != PJ_SUCCESS) {
         /* To avoid leak, we need to decrement 2 times since 
          * pjsip_dlg_modify_response() increment tdata ref count.
          */
-        // printf(">>>>>>>>>>>>>>>>>>>>>>> not success\n");
         pjsip_tx_data_dec_ref(last_res);
         pjsip_tx_data_dec_ref(last_res);
         goto on_return;
     }
-    // printf(">>>>>>>>>>>>>>>>>>>>>>> success\n");
-    // printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-    // char buffer[1024];  // Adjust the buffer size as needed
-    // int result;
-    // result = last_res->msg->body->print_body(last_res->msg->body, buffer, sizeof(buffer));
-    // if (result >= 0) {
-    //     printf("Message body:\n%.*s\n", 1024, buffer);
-    // }  else {
-    //     printf("Buffer size is not sufficient to print the entire message body.\n");
-    // }
-    // printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
     /* Invoke Session Timers */
     pjsip_timer_update_resp(inv, last_res);

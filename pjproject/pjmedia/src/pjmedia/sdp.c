@@ -1607,13 +1607,9 @@ PJ_DEF(pjmedia_sdp_session*) pjmedia_sdp_session_clone( pj_pool_t *pool,
 
     /* Duplicate media descriptors. */
     sess->media_count = rhs->media_count;
-    // printf("--------------------------------------\n");
     for (i=0; i<rhs->media_count; ++i) {
-        // printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ i : %d\n",i);
-        // printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Port: %d\n", rhs->media[i]->desc.port);
         sess->media[i] = pjmedia_sdp_media_clone(pool, rhs->media[i]);
     }
-    // printf("--------------------------------------\n");
 
     return sess;
 }
