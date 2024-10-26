@@ -2340,6 +2340,7 @@ pj_status_t pjsua_media_channel_init(pjsua_call_id call_id,
     }
     call->med_prov_cnt = call->med_cnt;
 
+
 #if DISABLED_FOR_TICKET_1185
     /* Return error if media transport has not been created yet
      * (e.g. application is starting)
@@ -2358,8 +2359,10 @@ pj_status_t pjsua_media_channel_init(pjsua_call_id call_id,
         /* We are sending answer, check media count for each media type
          * from the remote SDP.
          */
+        printf("UUUUUUUUUUUUUUUU maudcnt:%d      mtotaudcnt:%d \n", maudcnt, mtotaudcnt);
         sort_media(rem_sdp, &STR_AUDIO, acc->cfg.use_srtp,
                    maudidx, &maudcnt, &mtotaudcnt);
+        printf("UUUUUUUUUUUUUUUU maudcnt:%d      mtotaudcnt:%d \n", maudcnt, mtotaudcnt);
 
 #if PJMEDIA_HAS_VIDEO
         sort_media(rem_sdp, &STR_VIDEO, acc->cfg.use_srtp,
@@ -2381,6 +2384,8 @@ pj_status_t pjsua_media_channel_init(pjsua_call_id call_id,
          * must never decrease. Also note that we shouldn't apply the media
          * count setting (of the call setting) before the SDP negotiation.
          */
+        printf("pppppppppppp call->med_prov_cnt %d \n", call->med_prov_cnt);
+        printf("pppppppppppp rem_sdp->media_count %d \n", rem_sdp->media_count);
         if (call->med_prov_cnt < rem_sdp->media_count)
             call->med_prov_cnt = PJ_MIN(rem_sdp->media_count,
                                         PJSUA_MAX_CALL_MEDIA);
@@ -2661,12 +2666,16 @@ on_error:
  * updating media count (via call setting), media channel must be reinit'd
  * (using pjsua_media_channel_init()) first before calling this function.
  */
+// rem_sdp -> offer
+// p_sdp -> answer
+//P00
 pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id, 
                                            pj_pool_t *pool,
                                            const pjmedia_sdp_session *rem_sdp,
                                            pjmedia_sdp_session **p_sdp,
                                            int *sip_err_code)
 {
+    printf("MMMMMMMMMMMMMMMMMMM pjsua_media_channel_create_sdp\n");
     enum { MAX_MEDIA = PJSUA_MAX_CALL_MEDIA };
     pjmedia_sdp_session *sdp;
     pj_sockaddr origin;
@@ -2889,6 +2898,11 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
                       call_id, mi));
             continue;
         }
+        
+        //Solve
+        printf("!!!!!!!!!!!!!!!!!!!!! m.port:%d \n", m->desc.port);
+        pj_str_t str_lable = pj_str("label");
+        m->attr[m->attr_count++] = pjmedia_sdp_media_find_attr(rem_sdp->media[mi], &str_lable, NULL);
 
         /* Add ssrc and cname attribute */
         m->attr[m->attr_count++] = pjmedia_sdp_attr_create_ssrc(pool,
@@ -3894,25 +3908,25 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
             pjmedia_sdp_attr *a = NULL;
             
 ///////////////////////////////////////////////////////////////////////////////////////////
-            pj_str_t label0;
-            media = local_sdp->media[0];
-            pj_str_t str0 = pj_str("0");
-            label0.slen = str0.slen;
-            label0.ptr = (char*) pj_pool_alloc(pool, label0.slen);
-            pj_memcpy(label0.ptr, str0.ptr, label0.slen);
+            // pj_str_t label0;
+            // media = local_sdp->media[0];
+            // pj_str_t str0 = pj_str("0");
+            // label0.slen = str0.slen;
+            // label0.ptr = (char*) pj_pool_alloc(pool, label0.slen);
+            // pj_memcpy(label0.ptr, str0.ptr, label0.slen);
             
-            a = pjmedia_sdp_attr_create(pool, "label", &label0);
-            pjmedia_sdp_media_add_attr(media, a);
+            // a = pjmedia_sdp_attr_create(pool, "label", &label0);
+            // pjmedia_sdp_media_add_attr(media, a);
 /////////////////////////////////////////////////////////////////
-            pj_str_t label1;
-            media = local_sdp->media[1];
-            pj_str_t str1 = pj_str("1");
-            label1.slen = str1.slen;
-            label1.ptr = (char*) pj_pool_alloc(pool, label1.slen);
-            pj_memcpy(label1.ptr, str1.ptr, label1.slen);
+            // pj_str_t label1;
+            // media = local_sdp->media[1];
+            // pj_str_t str1 = pj_str("1");
+            // label1.slen = str1.slen;
+            // label1.ptr = (char*) pj_pool_alloc(pool, label1.slen);
+            // pj_memcpy(label1.ptr, str1.ptr, label1.slen);
             
-            a = pjmedia_sdp_attr_create(pool, "label", &label1);
-            pjmedia_sdp_media_add_attr(media, a);
+            // a = pjmedia_sdp_attr_create(pool, "label", &label1);
+            // pjmedia_sdp_media_add_attr(media, a);
 ///////////////////////////////////////////////////////////////////////////////////////////
 
             // for (int i=0; i<local_sdp->media_count; ++i) {

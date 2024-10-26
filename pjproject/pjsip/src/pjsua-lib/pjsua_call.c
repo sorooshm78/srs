@@ -431,6 +431,8 @@ static pj_status_t
 on_make_call_med_tp_complete(pjsua_call_id call_id,
                              const pjsua_med_tp_state_info *info)
 {
+    printf("MMMMMMMMMMMMMMMMMMMMMMMMMMM on_make_call_med_tp_complete\n");
+    
     pjmedia_sdp_session *offer = NULL;
     pjsip_inv_session *inv = NULL;
     pjsua_call *call = &pjsua_var.calls[call_id];
@@ -1284,6 +1286,7 @@ static pj_status_t verify_request(const pjsua_call *call,
                                   int *sip_err_code,
                                   pjsip_tx_data **response)
 {
+    printf("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  verify_request\n");
     const pjmedia_sdp_session *offer = NULL;
     pjmedia_sdp_session *answer;    
     int err_code = 0;
@@ -1309,6 +1312,8 @@ static pj_status_t verify_request(const pjsua_call *call,
             pjsua_perror(THIS_FILE, "Error creating SDP answer", status);
         }
     } else {
+        //P00
+        printf("MMMMMMMMMMMMMMMM call pjsua_media_channel_create_sdp \n");
         status = pjsua_media_channel_create_sdp(call->index,
                                                 call->async_call.dlg->pool,
                                                 offer, &answer, sip_err_code);
@@ -1517,6 +1522,7 @@ on_incoming_call_med_tp_complete(pjsua_call_id call_id,
  * Handle incoming INVITE request.
  * Called by pjsua_core.c
  */
+//Start
 pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 {
     printf("### pjsua_call_on_incoming\n");
@@ -1783,6 +1789,14 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             goto on_return;
         }
 
+        // verify exist lable
+        // pj_str_t STR_LABEL = { "label", 5 };
+        // for (int i=0; i<offer->media_count; i++){
+        //     pjmedia_sdp_attr *label_attr = pjmedia_sdp_media_find_attr(offer->media[i], &STR_LABEL, NULL);
+        //     printf("######################### %.*s:%.*s \n", label_attr->name.slen, label_attr->name.ptr, label_attr->value.slen, label_attr->value.ptr);
+        //     printf("######################### Port:%d \n", offer->media[i]->desc.port);
+        // }
+
     } else {
         offer = NULL;
     }
@@ -1967,6 +1981,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * For incoming call without SDP offer, media channel init will be done
      * in pjsua_call_answer(), see ticket #1526.
      */
+    //S1
     if (offer || replaced_dlg) {
 
         /* This is only for initial verification, it will check the SDP for
@@ -1977,6 +1992,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         printf("########## verify_request\n");
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
+
 
         if (status != PJ_SUCCESS) {
             pjsip_dlg_inc_lock(dlg);
@@ -1999,19 +2015,24 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             call->inv = NULL;
             call->async_call.dlg = NULL;
             goto on_return;
-        }
+        }        
+        //S2
+        printf("oooooooooooo s2\n");
         status = pjsua_media_channel_init(call->index, PJSIP_ROLE_UAS,
                                           call->secure_level,
                                           rdata->tp_info.pool,
                                           offer,
                                           &sip_err_code, PJ_TRUE,
                                           &on_incoming_call_med_tp_complete);
+        
+
         if (status == PJ_EPENDING) {
             /* on_incoming_call_med_tp_complete() will call
              * pjsip_dlg_dec_session().
              */
             should_dec_dlg = PJ_FALSE;
         } else  if (status == PJ_SUCCESS) {
+            printf("XXXXXXXXXXXXXXX status = pjsua_media_channel_init => success \n");
             /* on_incoming_call_med_tp_complete2() will call
              * pjsip_dlg_dec_session().
              */
@@ -2115,8 +2136,24 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * cause the disconnection callback to be called before on_incoming_call()
      * callback is called, which is not right).
      */
+    
+    //P1
+    // there is response is null
     status = pjsip_inv_initial_answer(inv, rdata,
                                       100, NULL, NULL, &response);
+    // there is response is initial
+
+    // printf("FFFFFFFFFFFFFFFFFF response \n");
+    // char buf[1024];                        // Allocate a buffer to store the printed message
+    // pj_size_t size = sizeof(buf);   
+    // int result = response->msg->body->print_body(response->msg->body, buf, size);
+    // if (result >= 0) {
+    //     printf("Message body: %s\n", buf);
+    // } else {
+    //     fprintf(stderr, "Failed to print message body\n");
+    // }
+    // printf("FFFFFFFFFFFFFFFFFF response \n");
+    
     if (status != PJ_SUCCESS) {
         if (response == NULL) {
             pjsua_perror(THIS_FILE, "Unable to send answer to incoming INVITE",
@@ -2137,6 +2174,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 
     } else {
 #if !PJSUA_DISABLE_AUTO_SEND_100
+        printf("response=success and if !PJSUA_DISABLE_AUTO_SEND_100=true \n");
         status = pjsip_inv_send_msg(inv, response);
         if (status != PJ_SUCCESS) {
             pjsua_perror(THIS_FILE, "Unable to send 100 response", status);
