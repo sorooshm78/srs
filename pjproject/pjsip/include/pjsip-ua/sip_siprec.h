@@ -24,6 +24,7 @@ PJ_BEGIN_DECL
  */
 PJ_DECL(pj_status_t) pjsip_siprec_init_module(pjsip_endpoint *endpt);
 
+PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_create_label(pjmedia_sdp_media *media);
 
 PJ_END_DECL
 

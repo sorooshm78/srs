@@ -2899,10 +2899,8 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
             continue;
         }
         
-        //Solve
-        printf("!!!!!!!!!!!!!!!!!!!!! m.port:%d \n", m->desc.port);
-        pj_str_t str_lable = pj_str("label");
-        m->attr[m->attr_count++] = pjmedia_sdp_media_find_attr(rem_sdp->media[mi], &str_lable, NULL);
+        //P00
+        m->attr[m->attr_count++] = pjmedia_sdp_attr_create_label(rem_sdp->media[mi]);
 
         /* Add ssrc and cname attribute */
         m->attr[m->attr_count++] = pjmedia_sdp_attr_create_ssrc(pool,

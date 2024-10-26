@@ -14,6 +14,7 @@
 
 
 static const pj_str_t STR_SIPREC         = {"siprec", 6};
+static const pj_str_t STR_LABEL          = {"label", 5};
 
 
 /* Deinitialize siprec */
@@ -51,4 +52,12 @@ PJ_DEF(pj_status_t) pjsip_siprec_init_module(pjsip_endpoint *endpt)
     }
 
     return PJ_SUCCESS;
+}
+
+
+PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_create_label(pjmedia_sdp_media *media)
+{
+    pjmedia_sdp_attr *attr;
+    attr = pjmedia_sdp_media_find_attr(media, &STR_LABEL, NULL);
+    return attr;
 }
