@@ -2669,6 +2669,7 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
                                            pjmedia_sdp_session **p_sdp,
                                            int *sip_err_code)
 {
+    printf("########### pjsua_media_channel_create_sdp \n");
     enum { MAX_MEDIA = PJSUA_MAX_CALL_MEDIA };
     pjmedia_sdp_session *sdp;
     pj_sockaddr origin;
@@ -3825,6 +3826,12 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
     mvidcnt = mtotvidcnt = 0;
 #endif
 
+    //Problem
+    printf("########## CHECK \n");
+    printf("########## maudcnt: %d \n", maudcnt);
+    printf("########## call->opt.aud_cnt: %d \n", call->opt.aud_cnt);
+    printf("########## CHECK \n");
+    
     /* We need to re-nego SDP or modify our answer when:
      * - media count exceeds the configured limit,
      * - RTCP-FB is enabled (so a=rtcp-fb will only be printed for negotiated
@@ -3860,49 +3867,21 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
          * answer, no media count limitation applied as we didn't know yet
          * which media would pass the SDP negotiation.
          */
-        //Problem
         if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt)
         {
-            // for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
-            //     pjmedia_sdp_media *m = local_sdp_renego->media[mi];
+            for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
+                pjmedia_sdp_media *m = local_sdp_renego->media[mi];
 
-            //     if (m->desc.port == 0 ||
-            //         pj_memchr(maudidx, mi, maudcnt*sizeof(maudidx[0])) ||
-            //         pj_memchr(mvididx, mi, mvidcnt*sizeof(mvididx[0])))
-            //     {
-            //         continue;
-            //     }
-
+                if (m->desc.port == 0 ||
+                    pj_memchr(maudidx, mi, maudcnt*sizeof(maudidx[0])) ||
+                    pj_memchr(mvididx, mi, mvidcnt*sizeof(mvididx[0])))
+                {
+                    continue;
+                }
             
-            //     /* Deactivate this excess media */
-            //     pjmedia_sdp_media_deactivate(tmp_pool, m);
-            // }
-
-            pj_pool_t *pool = call->inv->pool;
-            pjmedia_sdp_media *media;
-            pjmedia_sdp_attr *a = NULL;
-            
-///////////////////////////////////////////////////////////////////////////////////////////
-            // pj_str_t label0;
-            // media = local_sdp->media[0];
-            // pj_str_t str0 = pj_str("0");
-            // label0.slen = str0.slen;
-            // label0.ptr = (char*) pj_pool_alloc(pool, label0.slen);
-            // pj_memcpy(label0.ptr, str0.ptr, label0.slen);
-            
-            // a = pjmedia_sdp_attr_create(pool, "label", &label0);
-            // pjmedia_sdp_media_add_attr(media, a);
-/////////////////////////////////////////////////////////////////
-            // pj_str_t label1;
-            // media = local_sdp->media[1];
-            // pj_str_t str1 = pj_str("1");
-            // label1.slen = str1.slen;
-            // label1.ptr = (char*) pj_pool_alloc(pool, label1.slen);
-            // pj_memcpy(label1.ptr, str1.ptr, label1.slen);
-            
-            // a = pjmedia_sdp_attr_create(pool, "label", &label1);
-            // pjmedia_sdp_media_add_attr(media, a);
-///////////////////////////////////////////////////////////////////////////////////////////
+                /* Deactivate this excess media */
+                pjmedia_sdp_media_deactivate(tmp_pool, m);
+            }
         }
     }
 
