@@ -2662,7 +2662,6 @@ on_error:
  * updating media count (via call setting), media channel must be reinit'd
  * (using pjsua_media_channel_init()) first before calling this function.
  */
-//Problem
 pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id, 
                                            pj_pool_t *pool,
                                            const pjmedia_sdp_session *rem_sdp,
@@ -3776,7 +3775,6 @@ static pj_bool_t is_media_changed(const pjsua_call *call,
 
 #endif /* PJSUA_MEDIA_HAS_PJMEDIA || PJSUA_THIRD_PARTY_STREAM_HAS_GET_INFO */
 
-//Problem
 pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
                                        const pjmedia_sdp_session *local_sdp,
                                        const pjmedia_sdp_session *remote_sdp)
@@ -3827,10 +3825,10 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
 #endif
 
     //Problem
-    printf("########## CHECK \n");
+    printf("--------------------------------- \n");
     printf("########## maudcnt: %d \n", maudcnt);
     printf("########## call->opt.aud_cnt: %d \n", call->opt.aud_cnt);
-    printf("########## CHECK \n");
+    printf("--------------------------------- \n");
     
     /* We need to re-nego SDP or modify our answer when:
      * - media count exceeds the configured limit,
