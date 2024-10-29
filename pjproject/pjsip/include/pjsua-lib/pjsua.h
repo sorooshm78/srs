@@ -4390,6 +4390,11 @@ typedef struct pjsua_acc_config
     pj_bool_t                   enable_loopback;
 
     /**
+     * Default: PJ_FALSE
+     */
+    pj_bool_t                   enable_siprec;
+    
+    /**
      * Control the use of ICE in the account. By default, the settings in the
      * \a pjsua_media_config will be used.
      *

@@ -1527,7 +1527,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     pjsip_transaction *tsx = pjsip_rdata_get_tsx(rdata);
     pjsip_msg *msg = rdata->msg_info.msg;
     pjsip_tx_data *response = NULL;
-    // options
     unsigned options = 0;
     pjsip_inv_session *inv = NULL;
     int acc_id;
@@ -1786,6 +1785,11 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         offer = NULL;
     }
 
+
+    // Verify siprec request
+    printf("------------------------- %d \n", pjsua_var.acc[acc_id].cfg.enable_siprec);
+
+
     /* Verify that we can handle the request. */
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
@@ -1833,10 +1837,12 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     }
     
     //Problem
-    // if siprec -> call.opt == media_count
     printf("########## call.opt: %d \n", call->opt.aud_cnt);
     printf("########## media count: %d \n", offer->media_count);
-    call->opt.aud_cnt = offer->media_count;
+    if(pjsua_var.acc[acc_id].cfg.enable_siprec){
+        call->opt.aud_cnt = offer->media_count;
+        options |= PJSIP_INV_REQUIRE_SIPREC;
+    }
 
     
     /* Get suitable Contact header */
