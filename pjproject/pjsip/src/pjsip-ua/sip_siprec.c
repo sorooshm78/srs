@@ -61,3 +61,40 @@ PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_create_label(pjmedia_sdp_media *media
     attr = pjmedia_sdp_media_find_attr(media, &STR_LABEL, NULL);
     return attr;
 }
+
+PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
+                                              unsigned *options,
+                                              const pjmedia_sdp_session *sdp,
+                                              pjsip_tx_data **p_tdata)
+{
+    pjsip_msg *msg = NULL;
+    pjsip_require_hdr *req_hdr = NULL;
+    pj_status_t status = PJ_SUCCESS;
+
+    // check Requird: siprec
+    if (rdata) {
+        /* Get the message in rdata */
+        msg = rdata->msg_info.msg;
+    
+        /* Must be INVITE request. */
+        PJ_ASSERT_RETURN(msg && msg->type == PJSIP_REQUEST_MSG &&
+                         msg->line.req.method.id == PJSIP_INVITE_METHOD,
+                         PJ_EINVAL);
+    }
+
+    if (msg) {
+        req_hdr = (pjsip_require_hdr*)
+                  pjsip_msg_find_hdr(msg, PJSIP_H_REQUIRE, NULL);
+    }
+    if (req_hdr) {        
+        for (int i=0; i<req_hdr->count; ++i) {
+            
+        }
+    }
+
+    // check exist label
+
+    // check exist contact
+
+    return status;
+}

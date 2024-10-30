@@ -2894,6 +2894,8 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
         
         //Problem
         // if siprec is exist
+        printf("XXXXXXXXXXXXXXXXXXXX add lable \n");
+        printf("XXXXXXXXXXXXXXXXXXXX :%d \n", call->inv->options);        
         if(acc->cfg.enable_siprec){
             printf("########### add lable \n");
             m->attr[m->attr_count++] = pjmedia_sdp_attr_create_label(rem_sdp->media[mi]);

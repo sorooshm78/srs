@@ -330,7 +330,7 @@ PJ_DEF(const pjsip_hdr*) pjsip_endpt_get_capability( pjsip_endpoint *endpt,
 /*
  * Check if the specified capability is supported.
  */
-// pjsip_endpt_add_capability
+//Problem
 // pjsip_endpt_add_capability
 PJ_DEF(pj_bool_t) pjsip_endpt_has_capability( pjsip_endpoint *endpt,
                                               int htype,

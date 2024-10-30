@@ -1600,6 +1600,8 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             ret_st_code = response->msg->line.status.code;
 
             pjsip_get_response_addr(response->pool, rdata, &res_addr);
+            //Problem
+            //pjsip_endpt_send_response
             status = pjsip_endpt_send_response(pjsua_var.endpt, &res_addr, 
                                                response, NULL, NULL);
             if (status != PJ_SUCCESS) pjsip_tx_data_dec_ref(response);
@@ -1795,6 +1797,40 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     options |= PJSIP_INV_SUPPORT_TIMER;
     options |= PJSIP_INV_SUPPORT_SIPREC;
 
+    //Problem
+    printf("########## call.opt: %d \n", call->opt.aud_cnt);
+    printf("########## media count: %d \n", offer->media_count);
+
+    status = pjsip_siprec_verify_request(rdata, &options, offer, &response);
+
+    if (status != PJ_SUCCESS) {
+        /*
+         * No we can't handle the incoming INVITE request.
+         */
+        if (response) {
+            pjsip_response_addr res_addr;
+            ret_st_code = response->msg->line.status.code;
+
+            pjsip_get_response_addr(response->pool, rdata, &res_addr);
+            status = pjsip_endpt_send_response(pjsua_var.endpt, &res_addr, 
+                                               response, NULL, NULL);
+            if (status != PJ_SUCCESS) pjsip_tx_data_dec_ref(response);
+
+        } else {
+            /* Respond with 500 (Internal Server Error) */
+            ret_st_code = PJSIP_SC_INTERNAL_SERVER_ERROR;
+
+            pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
+                                NULL, NULL, NULL, NULL);
+        }
+
+        goto on_return;
+    }
+
+    if(pjsua_var.acc[acc_id].cfg.enable_siprec){
+        call->opt.aud_cnt = offer->media_count;
+    }
+
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
     if (pjsua_var.acc[acc_id].cfg.ice_cfg.enable_ice) {
@@ -1836,13 +1872,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         goto on_return;
     }
     
-    //Problem
-    printf("########## call.opt: %d \n", call->opt.aud_cnt);
-    printf("########## media count: %d \n", offer->media_count);
-    if(pjsua_var.acc[acc_id].cfg.enable_siprec){
-        call->opt.aud_cnt = offer->media_count;
-        options |= PJSIP_INV_REQUIRE_SIPREC;
-    }
 
     
     /* Get suitable Contact header */

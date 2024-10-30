@@ -26,6 +26,13 @@ PJ_DECL(pj_status_t) pjsip_siprec_init_module(pjsip_endpoint *endpt);
 
 PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_create_label(pjmedia_sdp_media *media);
 
+PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
+                                              unsigned *options,
+                                              const pjmedia_sdp_session *sdp,
+                                              pjsip_dialog *dlg,
+                                              pjsip_endpoint *endpt,
+                                              pjsip_tx_data **p_tdata);
+
 PJ_END_DECL
 
 
