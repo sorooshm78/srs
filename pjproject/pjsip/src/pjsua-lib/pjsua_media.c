@@ -3862,6 +3862,9 @@ pj_status_t pjsua_media_channel_update(pjsua_call_id call_id,
          */
         if (maudcnt > call->opt.aud_cnt || mvidcnt > call->opt.vid_cnt)
         {
+            maudcnt = PJ_MIN(maudcnt, call->opt.aud_cnt);
+            mvidcnt = PJ_MIN(mvidcnt, call->opt.vid_cnt);
+
             for (mi=0; mi < local_sdp_renego->media_count; ++mi) {
                 pjmedia_sdp_media *m = local_sdp_renego->media[mi];
 
