@@ -1586,7 +1586,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     /* Check INVITE request for Replaces header. If Replaces header is
      * present, the function will make sure that we can handle the request.
      */
-    ///////////////////////////////////////////////////////////////////////////////
     status = pjsip_replaces_verify_request(rdata, &replaced_dlg, PJ_FALSE,
                                            &response);
     if (status != PJ_SUCCESS) {

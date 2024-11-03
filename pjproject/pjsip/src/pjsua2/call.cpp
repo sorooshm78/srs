@@ -20,7 +20,6 @@
 #include <pjsua2/endpoint.hpp>
 #include <pj/ctype.h>
 #include "util.hpp"
-#include <iostream> 
 
 using namespace pj;
 using namespace std;
