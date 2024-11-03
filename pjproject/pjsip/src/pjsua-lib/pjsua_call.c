@@ -1788,14 +1788,18 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     /* Verify that we can handle the request. */
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
+    //WRITE_CODE
     options |= PJSIP_INV_SUPPORT_SIPREC;
- 
+    
+    //WRITE_CODE
     status = pjsip_siprec_verify_request(rdata, offer);
-
+    
+    //WRITE_CODE
     if(status == PJ_SUCCESS){
         options |= PJSIP_INV_REQUIRE_MULTIMEDIA;
     }
         
+    //WRITE_CODE
     if(pjsua_var.acc[acc_id].cfg.enable_multimedia || (options & PJSIP_INV_REQUIRE_MULTIMEDIA)){
         call->opt.aud_cnt = offer->media_count;
     }

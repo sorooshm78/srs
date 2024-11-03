@@ -19,6 +19,7 @@
 #include <pjsip-ua/sip_inv.h>
 #include <pjsip-ua/sip_100rel.h>
 #include <pjsip-ua/sip_timer.h>
+//WRITE_CODE
 #include <pjsip-ua/sip_siprec.h>
 #include <pjsip/print_util.h>
 #include <pjsip/sip_module.h>
@@ -1268,7 +1269,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
     /* Verify arguments. */
     PJ_ASSERT_RETURN(tmp_pool != NULL && options != NULL, PJ_EINVAL);
    
-   
+
     /* Normalize options */
     if (*options & PJSIP_INV_REQUIRE_100REL)
         *options |= PJSIP_INV_SUPPORT_100REL;
@@ -1278,6 +1279,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         *options |= PJSIP_INV_SUPPORT_ICE;
     if (*options & PJSIP_INV_REQUIRE_TRICKLE_ICE)
         *options |= PJSIP_INV_SUPPORT_TRICKLE_ICE;
+    //WRITE_CODE
     if (*options & PJSIP_INV_REQUIRE_SIPREC)
         *options |= PJSIP_INV_SUPPORT_SIPREC;
 
@@ -1532,6 +1534,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
         const pj_str_t STR_TIMER = { "timer", 5 };
         const pj_str_t STR_ICE = { "ice", 3 };
         const pj_str_t STR_TRICKLE_ICE = { "trickle-ice", 11 };
+        //WRITE_CODE
         const pj_str_t STR_SIPREC = { "siprec", 6 };
         unsigned unsupp_cnt = 0;
         pj_str_t unsupp_tags[PJSIP_GENERIC_ARRAY_MAX_COUNT];
@@ -1541,7 +1544,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
                 pj_stricmp(&req_hdr->values[i], &STR_100REL)==0)
             {
                 rem_option |= PJSIP_INV_REQUIRE_100REL;
-
+            //WRITE_CODE
             } else if ((*options & PJSIP_INV_SUPPORT_SIPREC) && 
                 pj_stricmp(&req_hdr->values[i], &STR_SIPREC)==0)
             {

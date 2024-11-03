@@ -332,6 +332,7 @@ PJ_DEF(void) pjsua_acc_config_default(pjsua_acc_config *cfg)
     cfg->transport_id = PJSUA_INVALID_ID;
     cfg->allow_contact_rewrite = PJ_TRUE;
     cfg->allow_via_rewrite = PJ_TRUE;
+    //WRITE_CODE
     cfg->enable_multimedia = PJ_FALSE;
     cfg->require_100rel = pjsua_var.ua_cfg.require_100rel;
     cfg->use_timer = pjsua_var.ua_cfg.use_timer;
@@ -1142,6 +1143,7 @@ PJ_DEF(pj_status_t) pjsua_init( const pjsua_config *ua_cfg,
     status = pjsip_timer_init_module(pjsua_var.endpt);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
 
+    //WRITE_CODE
     /* Initialize siprec support */
     status = pjsip_siprec_init_module(pjsua_var.endpt);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
