@@ -555,13 +555,10 @@ Media *Call::getMedia(unsigned med_idx) const
 
 AudioMedia Call::getAudioMedia(int med_idx) const PJSUA2_THROW(Error)
 {
-    // cout << "--------------> getAudioMedia" << endl;
     pjsua_call_info pj_ci;
     pjsua_call_get_info(id, &pj_ci);
     
-    // cout << "--------------> med_idx = " << med_idx << endl;
     if (med_idx < 0) {
-        // cout << "--------------> med_idx < 0" << endl;
         for (unsigned i = 0; i < pj_ci.media_cnt; ++i) {
             if (pj_ci.media[i].type == PJMEDIA_TYPE_AUDIO &&
                 pj_ci.media[i].stream.aud.conf_slot != PJSUA_INVALID_ID)
@@ -576,24 +573,18 @@ AudioMedia Call::getAudioMedia(int med_idx) const PJSUA2_THROW(Error)
         }
     }
 
-    // cout << "--------------> pj_ci.media_cnt = " << (int)pj_ci.media_cnt << endl;
     if (med_idx >= (int)pj_ci.media_cnt) {
-        // cout << "--------------> invalid media index" << endl;
         PJSUA2_RAISE_ERROR3(PJ_EINVAL, "getAudioMedia()",
                             "invalid media index");
     }
     if (pj_ci.media[med_idx].type != PJMEDIA_TYPE_AUDIO) {
-        // cout << "--------------> media is not audio" << endl;
         PJSUA2_RAISE_ERROR3(PJ_EINVAL, "getAudioMedia()",
                             "media is not audio");
     }
     if (pj_ci.media[med_idx].stream.aud.conf_slot == PJSUA_INVALID_ID) {
-        // cout << "--------------> no audio slot (inactive?)" << endl;
         PJSUA2_RAISE_ERROR3(PJ_EINVAL, "getAudioMedia()",
                             "no audio slot (inactive?)");
     }
-
-    // cout << "-------------------> pj_ci.media[med_idx].stream.aud.conf_slot = " << pj_ci.media[med_idx].stream.aud.conf_slot << endl;
 
     AudioMediaHelper am;
     am.setPortId(pj_ci.media[med_idx].stream.aud.conf_slot);
@@ -719,29 +710,17 @@ void Call::makeCall(const string &dst_uri, const CallOpParam &prm)
 }
 
 void Call::answer(const CallOpParam &prm) PJSUA2_THROW(Error)
-{
-    // cout << "--------------------->prm.sdp.wholeSdp: " << prm.sdp.wholeSdp << endl;
-    // cout << "--------------------->prm.txOption.contentType: " << prm.txOption.contentType << endl;
-    // cout << "--------------------->prm.txOption.msgBody: " << prm.txOption.msgBody << endl;
-    
+{    
     call_param param(prm.txOption, prm.opt, prm.reason,
                      sdp_pool, prm.sdp.wholeSdp);
     
-    // cout << "------- in before if" << endl;
     if (param.sdp) {
-        // cout << "------- in param sdp" << endl;
-        // cout << "------------- " << "status: " << prm.statusCode << " " << "sdp: " << prm.sdp.wholeSdp << endl;
-        // cout << "---------------------> origin.addr: " << param.sdp->origin.addr.ptr << endl;
-        // cout << "---------------------> origin.addr_type: " << param.sdp->origin.addr_type.ptr << endl;
         PJSUA2_CHECK_EXPR( pjsua_call_answer_with_sdp(id, param.sdp,
                                                       param.p_opt,
                                                       prm.statusCode,
                                                       param.p_reason,
                                                       param.p_msg_data) );
     } else {
-        // cout << "------- in else" << endl;
-        // cout << "------------- " << "status: " << prm.statusCode << " " << "sdp: " << prm.sdp.wholeSdp << endl;
-        // cout << "------------- " << param.p_msg_data << "|" << param.p_opt << "|" << param.p_reason << "|" << param.sdp << "|" << endl;
         PJSUA2_CHECK_EXPR( pjsua_call_answer2(id, param.p_opt, prm.statusCode,
                                               param.p_reason,
                                               param.p_msg_data) );

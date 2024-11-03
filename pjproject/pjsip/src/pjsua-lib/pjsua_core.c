@@ -1143,7 +1143,6 @@ PJ_DEF(pj_status_t) pjsua_init( const pjsua_config *ua_cfg,
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
 
     /* Initialize siprec support */
-    //Problem
     status = pjsip_siprec_init_module(pjsua_var.endpt);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
 
