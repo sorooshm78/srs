@@ -301,7 +301,7 @@ struct AccountSipConfig : public PersistentObject
     /**
      * Default is false.
      */
-    bool                enableSiprec;
+    bool                enableMultimedia;
 
 public:
     /**

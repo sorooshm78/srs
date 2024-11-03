@@ -4392,7 +4392,7 @@ typedef struct pjsua_acc_config
     /**
      * Default: PJ_FALSE
      */
-    pj_bool_t                   enable_siprec;
+    pj_bool_t                   enable_multimedia;
     
     /**
      * Control the use of ICE in the account. By default, the settings in the

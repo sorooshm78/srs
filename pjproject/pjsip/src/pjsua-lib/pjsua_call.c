@@ -1310,7 +1310,6 @@ static pj_status_t verify_request(const pjsua_call *call,
             pjsua_perror(THIS_FILE, "Error creating SDP answer", status);
         }
     } else {
-        //Problem
         status = pjsua_media_channel_create_sdp(call->index,
                                                 call->async_call.dlg->pool,
                                                 offer, &answer, sip_err_code);
@@ -1330,6 +1329,7 @@ static pj_status_t verify_request(const pjsua_call *call,
     if (status == PJ_SUCCESS) {
         unsigned options = 0;
 
+////////////////////////////////////////////////////////////////////
         /* Verify that we can handle the request. */
         status = pjsip_inv_verify_request3(rdata,
                                            call->inv->pool_prov, &options, 
@@ -1589,6 +1589,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     /* Check INVITE request for Replaces header. If Replaces header is
      * present, the function will make sure that we can handle the request.
      */
+    ///////////////////////////////////////////////////////////////////////////////
     status = pjsip_replaces_verify_request(rdata, &replaced_dlg, PJ_FALSE,
                                            &response);
     if (status != PJ_SUCCESS) {
@@ -1602,6 +1603,8 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             pjsip_get_response_addr(response->pool, rdata, &res_addr);
             //Problem
             //pjsip_endpt_send_response
+            //pjsip_endpt_respond_stateless
+            //pjsip_endpt_respond
             status = pjsip_endpt_send_response(pjsua_var.endpt, &res_addr, 
                                                response, NULL, NULL);
             if (status != PJ_SUCCESS) pjsip_tx_data_dec_ref(response);
@@ -1789,7 +1792,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 
 
     // Verify siprec request
-    printf("------------------------- %d \n", pjsua_var.acc[acc_id].cfg.enable_siprec);
+    printf("------------------------- %d \n", pjsua_var.acc[acc_id].cfg.enable_multimedia);
 
 
     /* Verify that we can handle the request. */
@@ -1800,36 +1803,36 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     //Problem
     printf("########## call.opt: %d \n", call->opt.aud_cnt);
     printf("########## media count: %d \n", offer->media_count);
+    
+    status = pjsip_siprec_verify_request(rdata, offer);
 
-    status = pjsip_siprec_verify_request(rdata, &options, offer, &response);
-
-    if (status != PJ_SUCCESS) {
-        /*
-         * No we can't handle the incoming INVITE request.
-         */
-        if (response) {
-            pjsip_response_addr res_addr;
-            ret_st_code = response->msg->line.status.code;
-
-            pjsip_get_response_addr(response->pool, rdata, &res_addr);
-            status = pjsip_endpt_send_response(pjsua_var.endpt, &res_addr, 
-                                               response, NULL, NULL);
-            if (status != PJ_SUCCESS) pjsip_tx_data_dec_ref(response);
-
-        } else {
-            /* Respond with 500 (Internal Server Error) */
-            ret_st_code = PJSIP_SC_INTERNAL_SERVER_ERROR;
-
-            pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
-                                NULL, NULL, NULL, NULL);
-        }
-
-        goto on_return;
+    if(status == PJ_SUCCESS){
+        printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX status == PJ_SUCCESS \n");
+        options |= PJSIP_INV_REQUIRE_MULTIMEDIA;
     }
-
-    if(pjsua_var.acc[acc_id].cfg.enable_siprec){
+        
+    if(pjsua_var.acc[acc_id].cfg.enable_multimedia || (options & PJSIP_INV_REQUIRE_MULTIMEDIA)){
+        printf("xxxxxxxxxxxxxxxxxx call->opt.aud_cnt = offer->media_count; \n");
         call->opt.aud_cnt = offer->media_count;
     }
+
+
+    // else if (status != PJ_SUCCESS)
+    // {   
+    //     // send bad request response 
+    //     printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX status != PJ_SUCCESS \n");
+    //     st_reason = pj_str("Missing media in SDP");
+    //     ret_st_code = PJSIP_SC_BAD_REQUEST;
+
+    //     pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
+    //                         &st_reason, NULL, NULL, NULL);
+    //     goto on_return;
+    // }
+
+    // access to options 
+    // if(pjsua_var.acc[acc_id].cfg.enable_multimedia){
+    //     options |= PJSIP_INV_REQUIRE_SIPREC;
+    // }
 
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
@@ -2010,6 +2013,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
          * codec support and the capability to handle the required
          * SIP extensions.
          */
+        printf("/////////////////////////////////////////////////////////////// \n");
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
 

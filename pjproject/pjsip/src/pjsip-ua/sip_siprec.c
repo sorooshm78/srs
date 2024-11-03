@@ -62,39 +62,29 @@ PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_create_label(pjmedia_sdp_media *media
     return attr;
 }
 
+
 PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
-                                              unsigned *options,
-                                              const pjmedia_sdp_session *sdp,
-                                              pjsip_tx_data **p_tdata)
+                                              const pjmedia_sdp_session *sdp)
 {
-    pjsip_msg *msg = NULL;
-    pjsip_require_hdr *req_hdr = NULL;
+    int code = 200;
+    pjsip_require_hdr *req_hdr;
     pj_status_t status = PJ_SUCCESS;
+    const pj_str_t str_require         = {"Require", 7};
 
-    // check Requird: siprec
-    if (rdata) {
-        /* Get the message in rdata */
-        msg = rdata->msg_info.msg;
-    
-        /* Must be INVITE request. */
-        PJ_ASSERT_RETURN(msg && msg->type == PJSIP_REQUEST_MSG &&
-                         msg->line.req.method.id == PJSIP_INVITE_METHOD,
-                         PJ_EINVAL);
-    }
+    req_hdr = (pjsip_require_hdr*) pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &str_require, NULL);
 
-    if (msg) {
-        req_hdr = (pjsip_require_hdr*)
-                  pjsip_msg_find_hdr(msg, PJSIP_H_REQUIRE, NULL);
-    }
-    if (req_hdr) {        
+    if(req_hdr)
+    {
         for (int i=0; i<req_hdr->count; ++i) {
-            
+            if (pj_stricmp(&req_hdr->values[i], &STR_SIPREC)==0)
+            {
+                printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX hdr exist \n");
+                return status;
+            }
         }
     }
 
-    // check exist label
-
-    // check exist contact
-
+    code = PJSIP_SC_NOT_FOUND;
+    status = PJSIP_ERRNO_FROM_SIP_STATUS(code);
     return status;
 }

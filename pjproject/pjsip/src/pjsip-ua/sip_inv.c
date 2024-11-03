@@ -1268,6 +1268,7 @@ PJ_DEF(pj_status_t) pjsip_inv_verify_request3(pjsip_rx_data *rdata,
     /* Verify arguments. */
     PJ_ASSERT_RETURN(tmp_pool != NULL && options != NULL, PJ_EINVAL);
    
+   
     /* Normalize options */
     if (*options & PJSIP_INV_REQUIRE_100REL)
         *options |= PJSIP_INV_SUPPORT_100REL;
