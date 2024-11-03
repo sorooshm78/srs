@@ -1284,7 +1284,6 @@ static pj_status_t verify_request(const pjsua_call *call,
                                   int *sip_err_code,
                                   pjsip_tx_data **response)
 {
-    printf("########### verify_request\n");
     const pjmedia_sdp_session *offer = NULL;
     pjmedia_sdp_session *answer;    
     int err_code = 0;
@@ -1520,7 +1519,6 @@ on_incoming_call_med_tp_complete(pjsua_call_id call_id,
  */
 pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
 {
-    printf("########### pjsua_call_on_incoming \n");
     pj_str_t contact;
     pjsip_dialog *dlg = pjsip_rdata_get_dlg(rdata);
     pjsip_dialog *replaced_dlg = NULL;
@@ -1791,48 +1789,20 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     }
 
 
-    // Verify siprec request
-    printf("------------------------- %d \n", pjsua_var.acc[acc_id].cfg.enable_multimedia);
-
-
     /* Verify that we can handle the request. */
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
     options |= PJSIP_INV_SUPPORT_SIPREC;
-
-    //Problem
-    printf("########## call.opt: %d \n", call->opt.aud_cnt);
-    printf("########## media count: %d \n", offer->media_count);
-    
+ 
     status = pjsip_siprec_verify_request(rdata, offer);
 
     if(status == PJ_SUCCESS){
-        printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX status == PJ_SUCCESS \n");
         options |= PJSIP_INV_REQUIRE_MULTIMEDIA;
     }
         
     if(pjsua_var.acc[acc_id].cfg.enable_multimedia || (options & PJSIP_INV_REQUIRE_MULTIMEDIA)){
-        printf("xxxxxxxxxxxxxxxxxx call->opt.aud_cnt = offer->media_count; \n");
         call->opt.aud_cnt = offer->media_count;
     }
-
-
-    // else if (status != PJ_SUCCESS)
-    // {   
-    //     // send bad request response 
-    //     printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX status != PJ_SUCCESS \n");
-    //     st_reason = pj_str("Missing media in SDP");
-    //     ret_st_code = PJSIP_SC_BAD_REQUEST;
-
-    //     pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
-    //                         &st_reason, NULL, NULL, NULL);
-    //     goto on_return;
-    // }
-
-    // access to options 
-    // if(pjsua_var.acc[acc_id].cfg.enable_multimedia){
-    //     options |= PJSIP_INV_REQUIRE_SIPREC;
-    // }
 
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
