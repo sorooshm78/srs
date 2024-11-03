@@ -1983,7 +1983,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
          * codec support and the capability to handle the required
          * SIP extensions.
          */
-        printf("/////////////////////////////////////////////////////////////// \n");
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
 

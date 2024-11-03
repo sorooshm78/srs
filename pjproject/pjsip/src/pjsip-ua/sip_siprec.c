@@ -78,7 +78,6 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
         for (int i=0; i<req_hdr->count; ++i) {
             if (pj_stricmp(&req_hdr->values[i], &STR_SIPREC)==0)
             {
-                printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX hdr exist \n");
                 return status;
             }
         }
