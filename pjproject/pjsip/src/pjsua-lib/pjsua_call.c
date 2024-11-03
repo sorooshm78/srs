@@ -1328,7 +1328,6 @@ static pj_status_t verify_request(const pjsua_call *call,
     if (status == PJ_SUCCESS) {
         unsigned options = 0;
 
-////////////////////////////////////////////////////////////////////
         /* Verify that we can handle the request. */
         status = pjsip_inv_verify_request3(rdata,
                                            call->inv->pool_prov, &options, 
