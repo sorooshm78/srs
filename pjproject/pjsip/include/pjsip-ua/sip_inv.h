@@ -388,8 +388,7 @@ enum pjsip_inv_option
      * Require trickle ICE support.
      */
     PJSIP_INV_REQUIRE_TRICKLE_ICE = 512,
-
-    //WRITE_CODE
+    
     /**
      * Indicate support for siprec
      */

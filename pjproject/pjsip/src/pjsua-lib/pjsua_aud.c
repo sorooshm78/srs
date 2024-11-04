@@ -606,8 +606,15 @@ void pjsua_aud_stop_stream(pjsua_call_media *call_med)
         }
 
         if (call_med->strm.a.media_port) {
-            if (call_med->strm.a.destroy_port)
+            pjmedia_port *stream_port;
+
+            /* Destroy custom stream port if any & configured to */
+            pjmedia_stream_get_port(call_med->strm.a.stream, &stream_port);
+            if (call_med->strm.a.destroy_port &&
+                call_med->strm.a.media_port != stream_port)
+            {
                 pjmedia_port_destroy(call_med->strm.a.media_port);
+            }
             call_med->strm.a.media_port = NULL;
         }
 
@@ -701,7 +708,8 @@ pj_status_t pjsua_aud_channel_update(pjsua_call_media *call_med,
     PJ_UNUSED_ARG(local_sdp);
     PJ_UNUSED_ARG(remote_sdp);
 
-    PJ_LOG(4,(THIS_FILE,"Audio channel update.."));
+    PJ_LOG(4,(THIS_FILE,"Audio channel update for index %d for call %d...",
+		                call_med->idx, call_med->call->index));
     pj_log_push_indent();
 
     si->rtcp_sdes_bye_disabled = pjsua_var.media_cfg.no_rtcp_sdes_bye;
@@ -853,6 +861,8 @@ pj_status_t pjsua_aud_channel_update(pjsua_call_media *call_med,
 
 on_return:
     pj_log_pop_indent();
+    if (status != PJ_SUCCESS)
+        pjsua_perror(THIS_FILE, "pjsua_aud_channel_update failed", status);
     return status;
 }
 

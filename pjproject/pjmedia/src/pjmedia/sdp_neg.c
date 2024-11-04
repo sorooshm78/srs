@@ -287,6 +287,7 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_get_active_local( pjmedia_sdp_neg *neg,
 {
     PJ_ASSERT_RETURN(neg && local, PJ_EINVAL);
     PJ_ASSERT_RETURN(neg->active_local_sdp, PJMEDIA_SDPNEG_ENOACTIVE);
+
     *local = neg->active_local_sdp;
     return PJ_SUCCESS;
 }
@@ -1993,7 +1994,6 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_negotiate( pj_pool_t *pool,
         pjmedia_sdp_session *active;
         status = process_answer(pool, neg->neg_local_sdp, neg->neg_remote_sdp,
                                 allow_asym, &active);
-
         if (status == PJ_SUCCESS) {
             /* Only update active SDPs when negotiation is successfull */
             neg->active_local_sdp = active;
@@ -2008,6 +2008,7 @@ PJ_DEF(pj_status_t) pjmedia_sdp_neg_negotiate( pj_pool_t *pool,
         }
     } else {
         pjmedia_sdp_session *answer = NULL;
+
         status = create_answer(pool, neg->prefer_remote_codec_order,
                                neg->answer_with_multiple_codecs,
                                neg->neg_local_sdp, neg->neg_remote_sdp,

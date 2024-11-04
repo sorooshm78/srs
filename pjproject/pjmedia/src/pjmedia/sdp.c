@@ -1560,7 +1560,6 @@ PJ_DEF(int) pjmedia_sdp_print( const pjmedia_sdp_session *desc,
 /*
  * Clone session
  */
-//////////////////////////////////////
 PJ_DEF(pjmedia_sdp_session*) pjmedia_sdp_session_clone( pj_pool_t *pool,
                                                 const pjmedia_sdp_session *rhs)
 {

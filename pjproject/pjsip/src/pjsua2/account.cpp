@@ -622,7 +622,6 @@ void AccountConfig::toPj(pjsua_acc_config &ret) const
     ret.auth_pref.algorithm     = str2Pj(sipConfig.authInitialAlgorithm);
     ret.transport_id            = sipConfig.transportId;
     ret.ipv6_sip_use            = sipConfig.ipv6Use;
-    //WRITE_CODE
     ret.enable_multimedia       = sipConfig.enableMultimedia;
 
     // AccountCallConfig
@@ -787,7 +786,6 @@ void AccountConfig::fromPj(const pjsua_acc_config &prm,
     sipConfig.authInitialAlgorithm = pj2Str(prm.auth_pref.algorithm);
     sipConfig.transportId       = prm.transport_id;
     sipConfig.ipv6Use           = prm.ipv6_sip_use;
-    //WRITE_CODE
     sipConfig.enableMultimedia  = PJ2BOOL(prm.enable_multimedia);
 
     // AccountCallConfig
@@ -996,8 +994,9 @@ void Account::create(const AccountConfig &acc_cfg,
     acc_cfg.toPj(pj_acc_cfg);
 
     for (unsigned i = 0; i < pj_acc_cfg.cred_count; ++i) {
-            pjsip_cred_info *dst = &pj_acc_cfg.cred_info[i];
-            dst->ext.aka.cb = (pjsip_cred_cb)Endpoint::on_auth_create_aka_response_callback;
+        pjsip_cred_info *dst = &pj_acc_cfg.cred_info[i];
+        dst->ext.aka.cb = (pjsip_cred_cb)
+                          &Endpoint::on_auth_create_aka_response_callback;
     }
     pj_acc_cfg.user_data = (void*)this;
     PJSUA2_CHECK_EXPR( pjsua_acc_add(&pj_acc_cfg, make_default, &id) );

@@ -881,6 +881,8 @@ PJ_DEF(pj_status_t) pjsua_call_make_call(pjsua_acc_id acc_id,
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE, "Failed to apply call setting", status);
         goto on_error;
+    } else if (!opt) {
+        opt = &call->opt;
     }
     
     /* Create sound port if none is instantiated, to check if sound device
@@ -952,6 +954,20 @@ PJ_DEF(pj_status_t) pjsua_call_make_call(pjsua_acc_id acc_id,
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE, "Dialog creation failed", status);
         goto on_error;
+    }
+
+    /*
+     * Use pre defined Call-ID to be sent out with INVITE as opposed
+     * to using a randomly generated Call-ID
+     */
+
+    if( opt->custom_call_id.slen > 0 ){
+        pj_strdup(dlg->pool, &dlg->call_id->id, &opt->custom_call_id);
+        PJ_LOG(4,(THIS_FILE, "Set user defined "
+                             "Call-ID (%.*s)",
+                  (int)dlg->call_id->id.slen, dlg->call_id->id.ptr  ));
+        pj_bzero(&call->opt.custom_call_id,
+                  sizeof(call->opt.custom_call_id));
     }
 
     /* Increment the dialog's lock otherwise when invite session creation
@@ -1778,30 +1794,25 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
                                 &st_reason, NULL, NULL, NULL);
             goto on_return;
         }
+
     } else {
         offer = NULL;
     }
 
-
     /* Verify that we can handle the request. */
     options |= PJSIP_INV_SUPPORT_100REL;
     options |= PJSIP_INV_SUPPORT_TIMER;
-    //WRITE_CODE
     options |= PJSIP_INV_SUPPORT_SIPREC;
-    
-    //WRITE_CODE
+
     status = pjsip_siprec_verify_request(rdata, offer);
-    
-    //WRITE_CODE
+
     if(status == PJ_SUCCESS){
         options |= PJSIP_INV_REQUIRE_MULTIMEDIA;
     }
         
-    //WRITE_CODE
     if(pjsua_var.acc[acc_id].cfg.enable_multimedia || (options & PJSIP_INV_REQUIRE_MULTIMEDIA)){
         call->opt.aud_cnt = offer->media_count;
     }
-
     if (pjsua_var.acc[acc_id].cfg.require_100rel == PJSUA_100REL_MANDATORY)
         options |= PJSIP_INV_REQUIRE_100REL;
     if (pjsua_var.acc[acc_id].cfg.ice_cfg.enable_ice) {
@@ -1820,6 +1831,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
     status = pjsip_inv_verify_request2(rdata, &options, offer, NULL, NULL,
                                        pjsua_var.endpt, &response);
     if (status != PJ_SUCCESS) {
+
         /*
          * No we can't handle the incoming INVITE request.
          */
@@ -1835,16 +1847,13 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         } else {
             /* Respond with 500 (Internal Server Error) */
             ret_st_code = PJSIP_SC_INTERNAL_SERVER_ERROR;
-
             pjsip_endpt_respond(pjsua_var.endpt, NULL, rdata, ret_st_code, 
                                 NULL, NULL, NULL, NULL);
         }
 
         goto on_return;
     }
-    
 
-    
     /* Get suitable Contact header */
     if (pjsua_var.acc[acc_id].contact.slen) {
         contact = pjsua_var.acc[acc_id].contact;
@@ -1984,7 +1993,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
         status = verify_request(call, rdata, PJ_TRUE, &sip_err_code, 
                                 &response);
 
-
         if (status != PJ_SUCCESS) {
             pjsip_dlg_inc_lock(dlg);
 
@@ -2006,15 +2014,13 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
             call->inv = NULL;
             call->async_call.dlg = NULL;
             goto on_return;
-        }        
+        }
         status = pjsua_media_channel_init(call->index, PJSIP_ROLE_UAS,
                                           call->secure_level,
                                           rdata->tp_info.pool,
                                           offer,
                                           &sip_err_code, PJ_TRUE,
                                           &on_incoming_call_med_tp_complete);
-        
-
         if (status == PJ_EPENDING) {
             /* on_incoming_call_med_tp_complete() will call
              * pjsip_dlg_dec_session().
@@ -2050,7 +2056,7 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
                                       NULL);
                 }               
 
-                if (call->inv->dlg) {
+                if (call->inv && call->inv->dlg) {
                     pjsip_inv_terminate(call->inv, sip_err_code, PJ_FALSE);
                 }
                 pjsip_dlg_dec_lock(dlg);
@@ -2124,7 +2130,6 @@ pj_bool_t pjsua_call_on_incoming(pjsip_rx_data *rdata)
      * cause the disconnection callback to be called before on_incoming_call()
      * callback is called, which is not right).
      */
-    
     status = pjsip_inv_initial_answer(inv, rdata,
                                       100, NULL, NULL, &response);
     if (status != PJ_SUCCESS) {
@@ -2881,7 +2886,6 @@ PJ_DEF(pj_status_t) pjsua_call_answer2(pjsua_call_id call_id,
 
     /* Create response message */
     status = pjsip_inv_answer(call->inv, code, reason, NULL, &tdata);
-    
     if (status != PJ_SUCCESS) {
         pjsua_perror(THIS_FILE, "Error creating response",
                      status);
@@ -5315,6 +5319,7 @@ static void pjsua_call_on_media_update(pjsip_inv_session *inv,
         goto on_return;
 
     if (status != PJ_SUCCESS) {
+
         pjsua_perror(THIS_FILE, "SDP negotiation has failed", status);
 
         /* Revert back provisional media. */

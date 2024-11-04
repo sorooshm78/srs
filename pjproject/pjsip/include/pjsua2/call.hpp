@@ -333,6 +333,19 @@ struct CallSetting
      */
     MediaDirVector mediaDir;
 
+    /**
+     * User defined Call-ID to be sent out with outgoing INVITE.
+     *
+     * Note: It is up to the developer to verify uniqueness of the
+     * Call-ID as there will be no verification. The developer must
+     * change the Call-ID between calls creating a unique id for each
+     * outgoing call.
+     *
+     * This setting will only be used when creating a new outgoing call
+     * via Call::makeCall().
+     */
+    string customCallId;
+
     
 public:
     /**
@@ -1342,7 +1355,8 @@ struct CallSendDtmfParam
     pjsua_dtmf_method method;    
 
     /**
-     * The signal duration used for the DTMF.
+     * The signal duration used for the DTMF. This field is only used
+     * if the method is PJSUA_DTMF_METHOD_SIP_INFO.
      *
      * Default: PJSUA_CALL_SEND_DTMF_DURATION_DEFAULT
      */

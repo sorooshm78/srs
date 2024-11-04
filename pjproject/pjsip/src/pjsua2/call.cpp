@@ -234,6 +234,8 @@ void CallSetting::fromPj(const pjsua_call_setting &prm)
     this->audioCount        = prm.aud_cnt;
     this->videoCount        = prm.vid_cnt;
     this->mediaDir.clear();
+    this->customCallId      = pj2Str(prm.custom_call_id);
+
     /* Since we don't know the size of media_dir array, we populate
      * mediaDir vector up to the element with non-default value.
      */
@@ -259,6 +261,10 @@ pjsua_call_setting CallSetting::toPj() const
     setting.vid_cnt             = this->videoCount;
     for (mi = 0; mi < this->mediaDir.size(); mi++) {
         setting.media_dir[mi] = (pjmedia_dir)this->mediaDir[mi];
+    }
+
+    if( ! this->customCallId.empty()) {
+        setting.custom_call_id = str2Pj(this->customCallId);
     }
     
     return setting;
@@ -709,7 +715,7 @@ void Call::makeCall(const string &dst_uri, const CallOpParam &prm)
 }
 
 void Call::answer(const CallOpParam &prm) PJSUA2_THROW(Error)
-{    
+{
     call_param param(prm.txOption, prm.opt, prm.reason,
                      sdp_pool, prm.sdp.wholeSdp);
     
@@ -723,7 +729,6 @@ void Call::answer(const CallOpParam &prm) PJSUA2_THROW(Error)
         PJSUA2_CHECK_EXPR( pjsua_call_answer2(id, param.p_opt, prm.statusCode,
                                               param.p_reason,
                                               param.p_msg_data) );
-                                              
     }
 }
 

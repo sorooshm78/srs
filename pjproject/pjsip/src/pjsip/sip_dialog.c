@@ -948,6 +948,11 @@ PJ_DEF(pj_status_t) pjsip_dlg_inc_session( pjsip_dialog *dlg,
  */
 PJ_DEF(void) pjsip_dlg_inc_lock(pjsip_dialog *dlg)
 {
+    /* Add ref temporarily to avoid possible dialog destroy while waiting
+     * the lock.
+     */
+    pj_grp_lock_add_ref(dlg->grp_lock_);
+
     PJ_LOG(6,(dlg->obj_name, "Entering pjsip_dlg_inc_lock(), sess_count=%d",
               dlg->sess_count));
 
@@ -956,6 +961,9 @@ PJ_DEF(void) pjsip_dlg_inc_lock(pjsip_dialog *dlg)
 
     PJ_LOG(6,(dlg->obj_name, "Leaving pjsip_dlg_inc_lock(), sess_count=%d",
               dlg->sess_count));
+
+    /* Lock has been acquired, dec ref */
+    pj_grp_lock_dec_ref(dlg->grp_lock_);
 }
 
 /* Try to acquire dialog's group lock, but bail out if group lock can not be
@@ -991,8 +999,8 @@ PJ_DEF(void) pjsip_dlg_dec_lock(pjsip_dialog *dlg)
 {
     PJ_ASSERT_ON_FAIL(dlg!=NULL, return);
 
-    PJ_LOG(6,(dlg->obj_name, "Entering pjsip_dlg_dec_lock(), sess_count=%d",
-              dlg->sess_count));
+    PJ_LOG(6,(dlg->obj_name, "Entering pjsip_dlg_dec_lock(), sess_count=%d, "
+                             "tsx_count=%d", dlg->sess_count, dlg->tsx_count));
 
     pj_assert(dlg->sess_count > 0);
     --dlg->sess_count;
@@ -1814,9 +1822,35 @@ void pjsip_dlg_on_rx_request( pjsip_dialog *dlg, pjsip_rx_data *rdata )
                            dlg->remote.contact->uri,
                            contact->uri)))
         {
+            pj_str_t tmp;
+            enum { TMP_LEN=PJSIP_MAX_URL_SIZE };
+            pj_ssize_t len;
+
+            PJ_LOG(4, (dlg->obj_name, "Updating remote contact in "
+                                      "target refresh"));
+
             dlg->remote.contact = (pjsip_contact_hdr*)
                                   pjsip_hdr_clone(dlg->pool, contact);
             dlg->target = dlg->remote.contact->uri;
+
+            /* Update remote info as well. */
+            dlg->remote.info = (pjsip_fromto_hdr*)
+                               pjsip_hdr_clone(dlg->pool, rdata->msg_info.from);
+            pjsip_fromto_hdr_set_to(dlg->remote.info);
+        
+            /* Print the remote info. */
+            tmp.ptr = (char*) pj_pool_alloc(rdata->tp_info.pool, TMP_LEN);
+            len = pjsip_uri_print(PJSIP_URI_IN_FROMTO_HDR,
+                                  dlg->remote.info->uri, tmp.ptr, TMP_LEN);
+            if (len < 1) {
+                tmp.slen=pj_ansi_strxcpy(tmp.ptr, "<-error: uri too long->", TMP_LEN);
+                if (tmp.slen<0)
+                    tmp.slen = pj_ansi_strlen(tmp.ptr);
+            } else
+                tmp.slen = len;
+        
+            /* Save the remote info. */
+            pj_strdup(dlg->pool, &dlg->remote.info_str, &tmp);
         }
     }
 
