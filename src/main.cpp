@@ -2,6 +2,8 @@
 #include <iostream>
 #include <csignal>
 
+#include <pjsua-lib/pjsua_internal.h>
+
 using namespace pj;
 
 bool isShutdown = false;
@@ -63,6 +65,16 @@ public:
         }
     }
 
+    void printSiprecMetadata()
+    {
+        int id = getId();
+        pjsua_call *call = &pjsua_var.calls[id];
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        std::cout << "Siprec Metadata:" << std::endl;
+        std::cout << string(call->siprec_metadata->ptr, call->siprec_metadata->slen) << std::endl;
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    }
+
     virtual void onCallState(OnCallStateParam& param)
     {
         CallInfo callInfo = getInfo();
@@ -104,6 +116,7 @@ public:
         CallOpParam param;
         param.statusCode = PJSIP_SC_OK;
         call->answer(param);
+        call->printSiprecMetadata();
     }
 };
 
