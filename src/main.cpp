@@ -69,10 +69,9 @@ public:
     {
         int id = getId();
         pjsua_call *call = &pjsua_var.calls[id];
-        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-        std::cout << "Siprec Metadata:" << std::endl;
-        std::cout << string(call->siprec_metadata->ptr, call->siprec_metadata->slen) << std::endl;
-        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        std::cout << ">>>>>>>>>>>>>>>>>> Siprec Metadata >>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        std::cout << string(call->siprec_metadata.ptr, call->siprec_metadata.slen) << std::endl;
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }
 
     virtual void onCallState(OnCallStateParam& param)
