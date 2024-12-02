@@ -4,6 +4,7 @@
 #include <pjsip/sip_event.h>
 #include <pjsip/sip_module.h>
 #include <pjsip/sip_transaction.h>
+#include <pjsip/sip_multipart.h>
 #include <pj/log.h>
 #include <pj/math.h>
 #include <pj/os.h>
@@ -98,7 +99,8 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_require_hdr(pjsip_require_hdr *req_hdr)
 /**
  * Verifies that the incoming request is a siprec request or not.
  */
-PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,    
+PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata, 
+                                                pj_str_t *metadata,
                                                 pjmedia_sdp_session *sdp_offer,                                     
                                                 unsigned *options,
                                                 pjsip_dialog *dlg,
@@ -140,6 +142,13 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
         return PJ_SUCCESS;
     }
 
+    /* Checks if the body exists */
+    if (!rdata->msg_info.msg->body) {
+        code = PJSIP_SC_BAD_REQUEST;
+        warn_text = "SIPREC INVITE must have a body";
+        goto on_return; 
+    }
+
     /* Currently, SIPREC INVITE requests without SPD are not supported. */
     if(!sdp_offer){
         code = PJSIP_SC_BAD_REQUEST;
@@ -154,7 +163,18 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
         goto on_return;
     }
 
+    pjsip_siprec_find_metadata(rdata->tp_info.pool,
+                                rdata->msg_info.msg->body,
+                                metadata);
+    
+    if(metadata->ptr == NULL || metadata->slen == 0) {
+        code = PJSIP_SC_BAD_REQUEST;
+        warn_text = "SIPREC INVITE must have a 'rs-metadata+xml' Content-Type";
+        goto on_return;
+    }
+
     *options |= PJSIP_INV_REQUIRE_SIPREC;
+
     return status;
 
 on_return:
@@ -210,4 +230,47 @@ on_return:
     }
 
     return status;
+}
+
+
+/**
+ * Find siprec metadata from the message body
+ */
+PJ_DECL(void) pjsip_siprec_find_metadata(pj_pool_t *pool,
+                                            pjsip_msg_body *body,
+                                            pj_str_t* metadata)
+{
+    pjsip_media_type application_metadata;
+
+    pjsip_media_type_init2(&application_metadata, "application", "rs-metadata+xml");
+
+    pjsip_multipart_part *metadata_part;
+    metadata_part = pjsip_multipart_find_part(body, &application_metadata, NULL);
+
+    if(!metadata_part) {
+        return;
+    }
+
+    metadata->ptr = (char*)metadata_part->body->data;
+    metadata->slen = metadata_part->body->len;
+}
+
+
+/*
+ * Counts the number of audio and video streams in the SDP
+ */
+PJ_DEF(void) pjsip_siprec_count_media(pjmedia_sdp_session *sdp,                                     
+                                                unsigned *maudcnt,
+                                                unsigned *mvidcnt)
+{
+    const pj_str_t STR_AUDIO = { "audio", 5 };
+    const pj_str_t STR_VIDEO = { "video", 5 };
+    
+    for(int mi=0; mi<sdp->media_count; mi++)
+    {
+        if (pj_stricmp(&sdp->media[mi]->desc.media, &STR_AUDIO) == 0) 
+            (*maudcnt)++;
+        else if (pj_stricmp(&sdp->media[mi]->desc.media, &STR_VIDEO) == 0) 
+            (*mvidcnt)++;
+    }
 }
