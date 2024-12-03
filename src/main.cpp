@@ -2,6 +2,7 @@
 #include <iostream>
 #include <csignal>
 #include <fstream>
+#include <filesystem>
 
 #include <pjsua-lib/pjsua_internal.h>
 
@@ -10,8 +11,8 @@ using namespace pj;
 bool isShutdown = false;
 const int LISTEN_PORT = 5060;
 const string USER = "1010";
-const string METADATA_PATH = "./";
-const string WAV_PATH = "./";
+const string METADATA_PATH = "./metadata";
+const string SOUND_PATH = "./sound";
 
 
 enum loglevel
@@ -24,6 +25,27 @@ enum loglevel
     TRACE,
     DETAILED_TRACE,
 };
+
+
+void signalCallbackHandler(int signum)
+{
+    isShutdown = true;
+}
+
+
+void createDirectory(string path)
+{
+    if (!std::filesystem::exists(path)) {
+        std::filesystem::create_directory(path);
+    }
+}
+
+void createNecessaryDirectories()
+{
+    createDirectory(SOUND_PATH);
+    createDirectory(METADATA_PATH);
+}
+
 
 class MyCall : public Call
 {
@@ -71,7 +93,7 @@ public:
 
     void saveAudioMedia(AudioMedia audioMedio, int media_index)
     {
-        string path = getFullPath(WAV_PATH, getWavFileName(media_index));
+        string path = getFullPath(SOUND_PATH, getWavFileName(media_index));
         if(media_index == 0){
             recorder1.createRecorder(path);
             audioMedio.startTransmit(recorder1);
@@ -94,7 +116,6 @@ public:
         if (file.is_open()) {
             file << metadata;
             file.close();
-            std::cout << "String written to file successfully!" << std::endl;
         } else {
             std::cout << "Unable to open file for writing!" << std::endl;
         }
@@ -113,6 +134,7 @@ public:
     virtual void onCallMediaState(OnCallMediaStateParam& params)
     {
         CallInfo callInfo = getInfo();
+        createNecessaryDirectories();
         for (unsigned media_index = 0; media_index < callInfo.media.size(); media_index++)
         {
             if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO)
@@ -145,11 +167,6 @@ public:
     }
 };
 
-
-void signalCallbackHandler(int signum)
-{
-    isShutdown = true;
-}
 
 int main(int argc, char* argv[])
 {
