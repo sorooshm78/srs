@@ -1,6 +1,7 @@
 #include <pjsua2.hpp>
 #include <iostream>
 #include <csignal>
+#include <fstream>
 
 #include <pjsua-lib/pjsua_internal.h>
 
@@ -9,6 +10,8 @@ using namespace pj;
 bool isShutdown = false;
 const int LISTEN_PORT = 5060;
 const string USER = "1010";
+const string METADATA_PATH = "./";
+const string WAV_PATH = "./";
 
 
 enum loglevel
@@ -52,26 +55,49 @@ public:
         return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
     }
 
+    string getMetadataFileName()
+    {
+        CallInfo callInfo = getInfo();
+        return callInfo.callIdString + "-" + "Metadata" +  ".txt";
+    }
+
+    string getFullPath(string path, string filename)
+    {
+        if (path.back() != '/' && path.back() != '\\') {
+            path += '/';
+        }
+        return path + filename;
+    }
+
     void saveAudioMedia(AudioMedia audioMedio, int media_index)
     {
-        string fileName = getWavFileName(media_index);
+        string path = getFullPath(WAV_PATH, getWavFileName(media_index));
         if(media_index == 0){
-            recorder1.createRecorder(fileName);
+            recorder1.createRecorder(path);
             audioMedio.startTransmit(recorder1);
         }
         if(media_index == 1){
-            recorder2.createRecorder(fileName);
+            recorder2.createRecorder(path);
             audioMedio.startTransmit(recorder2);
         }
     }
 
-    void printSiprecMetadata()
+    void saveMetadata()
     {
         int id = getId();
         pjsua_call *call = &pjsua_var.calls[id];
-        std::cout << ">>>>>>>>>>>>>>>>>> Siprec Metadata >>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-        std::cout << string(call->siprec_metadata.ptr, call->siprec_metadata.slen) << std::endl;
-        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        string metadata = string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
+        
+        string path = getFullPath(METADATA_PATH, getMetadataFileName());
+        std::ofstream file(path);
+        
+        if (file.is_open()) {
+            file << metadata;
+            file.close();
+            std::cout << "String written to file successfully!" << std::endl;
+        } else {
+            std::cout << "Unable to open file for writing!" << std::endl;
+        }
     }
 
     virtual void onCallState(OnCallStateParam& param)
@@ -95,6 +121,7 @@ public:
                 saveAudioMedia(audioMedia, media_index);
             }
         }
+        saveMetadata();
     }
 };
 
@@ -115,7 +142,6 @@ public:
         CallOpParam param;
         param.statusCode = PJSIP_SC_OK;
         call->answer(param);
-        call->printSiprecMetadata();
     }
 };
 
