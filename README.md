@@ -2,6 +2,14 @@
 session record server
 
 ## Required
+```bash
+sudo apt install build-essential
+```
+
+```bash
+sudo apt-get install libasound2-dev
+```
+
 ### Install pkg-config
 ```bash
 sudo apt install pkg-config 
