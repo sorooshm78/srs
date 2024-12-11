@@ -17,6 +17,20 @@ BUILD_DIR="$SRC_DIR/build"
 
 # Function to build and install pjproject
 build_pjproject() {
+    echo -e "${YELLOW} ########## Building PJProject dependencies... ${RESET}"
+    make -C $PJPROJECT_DIR dep
+    if [ $? -ne 0 ]; then
+        echo -e "${RED} ########## PJProject build failed. Exiting... ${RESET}"
+        exit 1
+    fi
+
+    echo -e "${YELLOW} ########## Cleaning previous PJProject build... ${RESET}"
+    make -C $PJPROJECT_DIR clean
+    if [ $? -ne 0 ]; then
+        echo -e "${RED} ########## PJProject clean failed. Exiting... ${RESET}"
+        exit 1
+    fi
+
     echo -e "${YELLOW} ########## Building PJProject... ${RESET}"
     make -C $PJPROJECT_DIR
     if [ $? -ne 0 ]; then
@@ -25,7 +39,7 @@ build_pjproject() {
     fi
     
     echo -e "${YELLOW} ########## Instaling PJProject... ${RESET}"
-    sudo make -C $PJPROJECT_DIR install
+    make -C $PJPROJECT_DIR install
     if [ $? -ne 0 ]; then
         echo -e "${RED} ########## PJProject install failed. Exiting... ${RESET}"
         exit 1

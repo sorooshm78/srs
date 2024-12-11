@@ -1,0 +1,42 @@
+# Stage 1: Build dependencies and environment setup
+FROM ubuntu:22.04 AS build
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /src
+
+# Install required packages for building
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    libssl-dev \
+    uuid-dev \
+    cmake \
+    libasound2-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone or copy the source code
+COPY . /src
+
+# Build the project
+WORKDIR /src/pjproject
+RUN ./configure
+
+WORKDIR /src
+RUN ./build.sh
+
+# Stage 2: Runtime image with only the necessary files
+FROM ubuntu:22.04 AS runtime
+
+# Install runtime dependencies (if needed, like libraries or tools for running the application)
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libasound2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the built application from the build stage
+COPY --from=build /src/build/srs /usr/local/bin/srs
+
+# Set the default command
+CMD ["/usr/local/bin/srs"]
