@@ -11,8 +11,8 @@ using namespace pj;
 bool isShutdown = false;
 const int LISTEN_PORT = 5060;
 const string USER = "1010";
-const string METADATA_PATH = "../record/metadata";
-const string SOUND_PATH = "../record/sound";
+const string METADATA_PATH = "../recordings/metadata";
+const string SOUND_PATH = "../recordings/sound";
 
 
 enum loglevel

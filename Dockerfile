@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-# RUN git clone --single-branch https://github.com/sorooshm78/srs.git .
 COPY . /src
 
 WORKDIR /src/pjproject
