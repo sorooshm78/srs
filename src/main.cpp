@@ -36,7 +36,7 @@ void signalCallbackHandler(int signum)
 void createDirectory(string path)
 {
     if (!std::filesystem::exists(path)) {
-        std::filesystem::create_directory(path);
+        std::filesystem::create_directories(path);
     }
 }
 
