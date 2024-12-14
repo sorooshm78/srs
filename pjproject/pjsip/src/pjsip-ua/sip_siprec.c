@@ -1,3 +1,20 @@
+/* 
+ * Copyright (C) 2024 Green and Silver Leaves. (https://github.com/BSVN)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ */
 #include <pjsip-ua/sip_siprec.h>
 #include <pjsip/print_util.h>
 #include <pjsip/sip_endpoint.h>
@@ -15,7 +32,6 @@
 
 
 static const pj_str_t STR_SIPREC         = {"siprec", 6};
-static const pj_str_t STR_LABEL          = {"label", 5};
 
 
 /* Deinitialize siprec */
@@ -43,40 +59,17 @@ PJ_DEF(pj_status_t) pjsip_siprec_init_module(pjsip_endpoint *endpt)
         return status;
 
     /* Register deinit module to be executed when PJLIB shutdown */
-    if (pjsip_endpt_atexit(endpt, &pjsip_siprec_deinit_module) != PJ_SUCCESS) {
+    if (pjsip_endpt_atexit(endpt, &pjsip_siprec_deinit_module) != PJ_SUCCESS)
+    {
         /* Failure to register this function may cause this module won't 
          * work properly when the stack is restarted (without quitting 
          * application).
          */
-        pj_assert(!"Failed to register Session Timer deinit.");
-        PJ_LOG(1, (THIS_FILE, "Failed to register Session Timer deinit."));
+        pj_assert(!"Failed to register Siprec deinit.");
+        PJ_LOG(1, (THIS_FILE, "Failed to register Siprec deinit."));
     }
 
     return PJ_SUCCESS;
-}
-
-
-/**
- * Returns the label attribute in the SDP offer 
- */
-PJ_DEF(pjmedia_sdp_attr*) pjmedia_sdp_attr_get_label(pjmedia_sdp_media *sdp_media)
-{
-    pjmedia_sdp_attr *attr;
-    attr = pjmedia_sdp_media_find_attr(sdp_media, &STR_LABEL, NULL);
-    return attr;
-}
-
-
-/**
- * Checks if there is an attribute label for each media in the SDP.
- */
-PJ_DEF(pj_status_t) pjsip_siprec_verify_sdp_attr_label(pjmedia_sdp_session *sdp)
-{
-    for (unsigned mi=0; mi<sdp->media_count; ++mi) {
-        if(!pjmedia_sdp_attr_get_label(sdp->media[mi]))
-            return PJ_FALSE;
-    }
-    return PJ_TRUE;
 }
 
 
@@ -100,15 +93,15 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_require_hdr(pjsip_require_hdr *req_hdr)
  * Verifies that the incoming request is a siprec request or not.
  */
 PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata, 
-                                                pj_str_t *metadata,
-                                                pjmedia_sdp_session *sdp_offer,                                     
-                                                unsigned *options,
-                                                pjsip_dialog *dlg,
-                                                pjsip_endpoint *endpt,
-                                                pjsip_tx_data **p_tdata)
+                                              pj_str_t *metadata,
+                                              pjmedia_sdp_session *sdp_offer,                                      
+                                              unsigned *options,
+                                              pjsip_dialog *dlg,
+                                              pjsip_endpoint *endpt,
+                                              pjsip_tx_data **p_tdata)
 {
     pjsip_require_hdr *req_hdr;
-    pjsip_contact_hdr *conatct_hdr;
+    pjsip_contact_hdr *contact_hdr;
     const pj_str_t str_require = {"Require", 7};
     const pj_str_t str_src = {"+sip.src", 8};
     int code = 200;
@@ -124,21 +117,23 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
     pj_list_init(&res_hdr_list);
 
     /* Find Require header */
-    req_hdr = (pjsip_require_hdr*) pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &str_require, NULL);
+    req_hdr = (pjsip_require_hdr*)
+        pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &str_require, NULL);
 
     if(!req_hdr || (pjsip_siprec_verify_require_hdr(req_hdr) == PJ_FALSE)){
         return PJ_SUCCESS;
     }
     
-    /* Find Conatct header */
-    conatct_hdr = (pjsip_contact_hdr*) pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_CONTACT, NULL);
+    /* Find Contact header */
+    contact_hdr = (pjsip_contact_hdr*)
+            pjsip_msg_find_hdr(rdata->msg_info.msg, PJSIP_H_CONTACT, NULL);
 
-    if(!conatct_hdr || !conatct_hdr->uri){
+    if(!contact_hdr || !contact_hdr->uri){
         return PJ_SUCCESS;
     }
 
     /* Check "+sip.src" parameter exist in the Contact header */
-    if(!pjsip_param_find(&conatct_hdr->other_param, &str_src)){
+    if(!pjsip_param_find(&contact_hdr->other_param, &str_src)){
         return PJ_SUCCESS;
     }
 
@@ -163,13 +158,13 @@ PJ_DEF(pj_status_t) pjsip_siprec_verify_request(pjsip_rx_data *rdata,
         goto on_return;
     }
 
-    pjsip_siprec_find_metadata(rdata->tp_info.pool,
-                                rdata->msg_info.msg->body,
-                                metadata);
+    status = pjsip_siprec_get_metadata(rdata->tp_info.pool,
+                                        rdata->msg_info.msg->body,
+                                        metadata);
     
-    if(metadata->ptr == NULL || metadata->slen == 0) {
+    if(status != PJ_SUCCESS) {
         code = PJSIP_SC_BAD_REQUEST;
-        warn_text = "SIPREC INVITE must have a 'rs-metadata+xml' Content-Type";
+        warn_text = "SIPREC INVITE must have a 'rs-metadata' Content-Type";
         goto on_return;
     }
 
@@ -236,41 +231,24 @@ on_return:
 /**
  * Find siprec metadata from the message body
  */
-PJ_DEF(void) pjsip_siprec_find_metadata(pj_pool_t *pool,
+PJ_DEF(pj_status_t) pjsip_siprec_get_metadata(pj_pool_t *pool,
                                             pjsip_msg_body *body,
                                             pj_str_t* metadata)
 {
     pjsip_media_type application_metadata;
 
-    pjsip_media_type_init2(&application_metadata, "application", "rs-metadata+xml");
+    pjsip_media_type_init2(&application_metadata,
+                            "application", "rs-metadata");
 
     pjsip_multipart_part *metadata_part;
-    metadata_part = pjsip_multipart_find_part(body, &application_metadata, NULL);
+    metadata_part = pjsip_multipart_find_part(body, 
+                                            &application_metadata, NULL);   
 
-    if(!metadata_part) {
-        return;
-    }
+    if(!metadata_part)
+        return PJ_ENOTFOUND;
 
     metadata->ptr = (char*)metadata_part->body->data;
     metadata->slen = metadata_part->body->len;
-}
-
-
-/*
- * Counts the number of audio and video streams in the SDP
- */
-PJ_DEF(void) pjsip_siprec_count_media(pjmedia_sdp_session *sdp,                                     
-                                                unsigned *maudcnt,
-                                                unsigned *mvidcnt)
-{
-    const pj_str_t STR_AUDIO = { "audio", 5 };
-    const pj_str_t STR_VIDEO = { "video", 5 };
     
-    for(int mi=0; mi<sdp->media_count; mi++)
-    {
-        if (pj_stricmp(&sdp->media[mi]->desc.media, &STR_AUDIO) == 0) 
-            (*maudcnt)++;
-        else if (pj_stricmp(&sdp->media[mi]->desc.media, &STR_VIDEO) == 0) 
-            (*mvidcnt)++;
-    }
+    return PJ_SUCCESS;
 }
