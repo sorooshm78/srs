@@ -10,6 +10,14 @@ sudo apt install build-essential
 sudo apt-get install libasound2-dev
 ```
 
+```bash
+sudo apt-get install libssl-dev
+```
+
+```bash
+sudo apt install nlohmann-json3-dev
+```
+
 ### Install pkg-config
 ```bash
 sudo apt install pkg-config 

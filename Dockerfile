@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     libasound2-dev \
     pkg-config \
+    nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
