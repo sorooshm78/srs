@@ -200,7 +200,9 @@ int main(int argc, char* argv[])
     accountConfig.idUri = "sip:" + USER + "@192.168.21.88";
     accountConfig.regConfig.registrarUri = "";
     accountConfig.sipConfig.authCreds.clear();
-    accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_INACTIVE;
+    accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;
+    // accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_MANDATORY;
+    // accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_INACTIVE;
 
     // Create the account
     auto* account = new MyAccount;
