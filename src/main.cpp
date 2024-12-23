@@ -3,16 +3,22 @@
 #include <csignal>
 #include <fstream>
 #include <filesystem>
+#include <nlohmann/json.hpp>
 
 #include <pjsua-lib/pjsua_internal.h>
 
+using json = nlohmann::json;
 using namespace pj;
+using namespace std;
 
 bool isShutdown = false;
-const int LISTEN_PORT = 5060;
-const string USER = "1010";
-const string METADATA_PATH = "/var/srs/metadata";
-const string SOUND_PATH = "/var/srs/sound";
+
+// config varible
+string configFilePath = "../src/config.json";
+int    listenPort = 5060;
+string user = "1010";
+string metadataPath = "/var/srs/metadata";
+string soundPath = "/var/srs/sound";
 
 
 enum loglevel
@@ -35,15 +41,51 @@ void signalCallbackHandler(int signum)
 
 void createDirectory(string path)
 {
-    if (!std::filesystem::exists(path)) {
-        std::filesystem::create_directories(path);
+    if (!filesystem::exists(path)) {
+        filesystem::create_directories(path);
     }
 }
 
+
 void createNecessaryDirectories()
 {
-    createDirectory(SOUND_PATH);
-    createDirectory(METADATA_PATH);
+    createDirectory(soundPath);
+    createDirectory(metadataPath);
+}
+
+
+template <typename T>
+void setConfigValue(const json& config, const string& key, T& variable) {
+    if (config.contains(key)) {
+        variable = config[key].get<T>();
+    }
+}
+
+
+void readConfig()
+{
+    ifstream configFile(configFilePath);
+    if (!configFile.is_open()) {
+        cout << "Error: Cannot open configuration file: " << configFilePath << endl;
+    }
+
+    try {
+        json config;
+        configFile >> config;
+
+        setConfigValue(config, "listen_port", listenPort);
+        setConfigValue(config, "user", user);
+        setConfigValue(config, "metadata_path", metadataPath);
+        setConfigValue(config, "sound_path", soundPath);
+        
+        cout << listenPort << endl;
+        cout << user << endl;
+        cout << metadataPath << endl;
+        cout << soundPath << endl;
+
+    } catch (json::parse_error& e) {
+        cout << "Error: Failed to parse JSON file. " << e.what() << endl;
+    }
 }
 
 
@@ -60,21 +102,21 @@ public:
 
     void printCallState(string state, string localUri, string remoteUri, long connectDuration, string callID)
     {
-        std::cout << "########## " << "Call-ID:" << callID;
-        std::cout << "\t";
-        std::cout << "State:" << state;
-        std::cout << "\t";
-        std::cout << "(" << remoteUri << " -> " << localUri << ")";
-        std::cout << "\t";
-        std::cout << "Duration:" << connectDuration << "sec";
-        std::cout << std::endl;
+        cout << "########## " << "Call-ID:" << callID;
+        cout << "\t";
+        cout << "State:" << state;
+        cout << "\t";
+        cout << "(" << remoteUri << " -> " << localUri << ")";
+        cout << "\t";
+        cout << "Duration:" << connectDuration << "sec";
+        cout << endl;
     }
 
     string getWavFileName(int media_index)
     {
         CallInfo callInfo = getInfo();
         int recorder = media_index + 1;
-        return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
+        return callInfo.callIdString + "-" + to_string(recorder) +  ".wav";
     }
 
     string getMetadataFileName()
@@ -93,7 +135,7 @@ public:
 
     void saveAudioMedia(AudioMedia audioMedio, int media_index)
     {
-        string path = getFullPath(SOUND_PATH, getWavFileName(media_index));
+        string path = getFullPath(soundPath, getWavFileName(media_index));
         if(media_index == 0){
             recorder1.createRecorder(path);
             audioMedio.startTransmit(recorder1);
@@ -110,14 +152,14 @@ public:
         pjsua_call *call = &pjsua_var.calls[id];
         string metadata = string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
         
-        string path = getFullPath(METADATA_PATH, getMetadataFileName());
-        std::ofstream file(path);
+        string path = getFullPath(metadataPath, getMetadataFileName());
+        ofstream file(path);
         
         if (file.is_open()) {
             file << metadata;
             file.close();
         } else {
-            std::cout << "Unable to open file for writing!" << std::endl;
+            cout << "Unable to open file for writing!" << endl;
         }
     }
 
@@ -154,8 +196,8 @@ public:
     void onRegState(OnRegStateParam& param) override
     {
         AccountInfo accountInfo = getInfo();
-        std::cout << (accountInfo.regIsActive ? "*** Register:" : "*** Unregister:")
-            << " code=" << param.code << std::endl;
+        cout << (accountInfo.regIsActive ? "*** Register:" : "*** Unregister:")
+            << " code=" << param.code << endl;
     }
 
     void onIncomingCall(OnIncomingCallParam& incomingParam) override
@@ -172,6 +214,8 @@ public:
 
 int main(int argc, char* argv[])
 {
+    readConfig();
+
     Endpoint endpoint;
     endpoint.libCreate();
 
@@ -182,7 +226,7 @@ int main(int argc, char* argv[])
     endpoint.audDevManager().setNullDev();
 
     TransportConfig transportConfig;
-    transportConfig.port = LISTEN_PORT;
+    transportConfig.port = listenPort;
     try
     {
         endpoint.transportCreate(PJSIP_TRANSPORT_UDP, transportConfig);
@@ -197,7 +241,7 @@ int main(int argc, char* argv[])
     std::cout << "*** PJSUA2 STARTED ***" << std::endl;
 
     AccountConfig accountConfig;
-    accountConfig.idUri = "sip:" + USER + "@192.168.21.88";
+    accountConfig.idUri = "sip:" + user + "@192.168.21.88";
     accountConfig.regConfig.registrarUri = "";
     accountConfig.sipConfig.authCreds.clear();
     accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;

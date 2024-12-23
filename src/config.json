@@ -1,0 +1,6 @@
+{
+    "listen_port": 5060,
+    "user": "1010",
+    "metadata_path": "/var/srs/metadata",
+    "sound_path": "/var/srs/sound"
+}
