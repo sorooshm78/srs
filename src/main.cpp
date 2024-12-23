@@ -14,7 +14,7 @@ using namespace std;
 bool isShutdown = false;
 
 // config varible
-string configFilePath = "../src/config.json";
+string configFilePath = "../src/config.json"; // TODO: change configFilePath to /etc/srs/config.json
 int    listenPort = 5060;
 string user = "1010";
 string metadataPath = "/var/srs/metadata";
