@@ -19,6 +19,7 @@ int    listenPort = 5060;
 string user = "1010";
 string metadataPath = "/var/srs/metadata";
 string soundPath = "/var/srs/sound";
+pjsua_sip_siprec_use siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;
 
 
 enum loglevel
@@ -54,6 +55,19 @@ void createNecessaryDirectories()
 }
 
 
+pjsua_sip_siprec_use getSiprecOption(const string& option) {
+    if (option == "inactive") {
+        return PJSUA_SIP_SIPREC_INACTIVE;
+    } else if (option == "optional") {
+        return PJSUA_SIP_SIPREC_OPTIONAL;
+    } else if (option == "mandatory") {
+        return PJSUA_SIP_SIPREC_MANDATORY;
+    } else {
+        throw invalid_argument("Invalid siprec_use value in configuration.");
+    }
+}
+
+
 template <typename T>
 void setConfigValue(const json& config, const string& key, T& variable) {
     if (config.contains(key)) {
@@ -66,7 +80,7 @@ void readConfig()
 {
     ifstream configFile(configFilePath);
     if (!configFile.is_open()) {
-        cout << "Error: Cannot open configuration file: " << configFilePath << endl;
+        cout << "Warn: Cannot open configuration file: " << configFilePath << endl;
     }
 
     try {
@@ -78,11 +92,9 @@ void readConfig()
         setConfigValue(config, "metadata_path", metadataPath);
         setConfigValue(config, "sound_path", soundPath);
         
-        cout << listenPort << endl;
-        cout << user << endl;
-        cout << metadataPath << endl;
-        cout << soundPath << endl;
-
+        if (config.contains("siprec_use")) {
+            siprecUse = getSiprecOption(config["siprec_use"].get<string>());
+        }
     } catch (json::parse_error& e) {
         cout << "Error: Failed to parse JSON file. " << e.what() << endl;
     }
@@ -244,9 +256,7 @@ int main(int argc, char* argv[])
     accountConfig.idUri = "sip:" + user + "@192.168.21.88";
     accountConfig.regConfig.registrarUri = "";
     accountConfig.sipConfig.authCreds.clear();
-    accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;
-    // accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_MANDATORY;
-    // accountConfig.callConfig.siprecUse = PJSUA_SIP_SIPREC_INACTIVE;
+    accountConfig.callConfig.siprecUse = siprecUse;
 
     // Create the account
     auto* account = new MyAccount;
