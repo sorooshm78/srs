@@ -12,14 +12,7 @@ using namespace pj;
 using namespace std;
 
 bool isShutdown = false;
-
-// config varible
-string configFilePath = "../src/config.json"; // TODO: change configFilePath to /etc/srs/config.json
-int    listenPort = 5060;
-string user = "1010";
-string metadataPath = "/var/srs/metadata";
-string soundPath = "/var/srs/sound";
-pjsua_sip_siprec_use siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;
+string configFilePath = "/etc/srs/config.json";
 
 
 enum loglevel
@@ -48,57 +41,65 @@ void createDirectory(string path)
 }
 
 
-void createNecessaryDirectories()
-{
-    createDirectory(soundPath);
-    createDirectory(metadataPath);
-}
+class Config {
+public:
+    static int listenPort;
+    static string user;
+    static string metadataPath;
+    static string soundPath;
+    static pjsua_sip_siprec_use siprecUse;
 
 
-pjsua_sip_siprec_use getSiprecOption(const string& option) {
-    if (option == "inactive") {
-        return PJSUA_SIP_SIPREC_INACTIVE;
-    } else if (option == "optional") {
-        return PJSUA_SIP_SIPREC_OPTIONAL;
-    } else if (option == "mandatory") {
-        return PJSUA_SIP_SIPREC_MANDATORY;
-    } else {
-        throw invalid_argument("Invalid siprec_use value in configuration.");
-    }
-}
-
-
-template <typename T>
-void setConfigValue(const json& config, const string& key, T& variable) {
-    if (config.contains(key)) {
-        variable = config[key].get<T>();
-    }
-}
-
-
-void readConfig()
-{
-    ifstream configFile(configFilePath);
-    if (!configFile.is_open()) {
-        cout << "Warn: Cannot open configuration file: " << configFilePath << endl;
-    }
-
-    try {
-        json config;
-        configFile >> config;
-
-        setConfigValue(config, "listen_port", listenPort);
-        setConfigValue(config, "user", user);
-        setConfigValue(config, "metadata_path", metadataPath);
-        setConfigValue(config, "sound_path", soundPath);
-        
-        if (config.contains("siprec_use")) {
-            siprecUse = getSiprecOption(config["siprec_use"].get<string>());
+    static void loadConfig() {
+        ifstream configFile(configFilePath);
+        if (!configFile.is_open()) {
+            cout << "Warn: Cannot open configuration file: " << configFilePath << endl;
         }
-    } catch (json::parse_error& e) {
-        cout << "Error: Failed to parse JSON file. " << e.what() << endl;
+
+        try {
+            json config;
+            configFile >> config;
+
+            setConfigValue(config, "listen_port", listenPort);
+            setConfigValue(config, "user", user);
+            setConfigValue(config, "metadata_path", metadataPath);
+            setConfigValue(config, "sound_path", soundPath);
+
+            if (config.contains("siprec_use")) {
+                siprecUse = getSiprecOption(config["siprec_use"].get<string>());
+            }
+        } catch (json::parse_error& e) {
+            cout << "Error: Failed to parse JSON file. " << e.what() << endl;
+        }
     }
-}
+
+private:
+    template <typename T>
+    static void setConfigValue(const json& config, const string& key, T& variable) {
+        if (config.contains(key)) {
+            variable = config[key].get<T>();
+        }
+    }
+
+    static pjsua_sip_siprec_use getSiprecOption(const string& option) {
+        if (option == "inactive") {
+            return PJSUA_SIP_SIPREC_INACTIVE;
+        } else if (option == "optional") {
+            return PJSUA_SIP_SIPREC_OPTIONAL;
+        } else if (option == "mandatory") {
+            return PJSUA_SIP_SIPREC_MANDATORY;
+        } else {
+            throw invalid_argument("Invalid siprec_use value in configuration.");
+        }
+    }
+};
+
+
+int Config::listenPort = 5060;
+string Config::user = "1010";
+string Config::metadataPath = "/var/srs/metadata";
+string Config::soundPath = "/var/srs/sound";
+pjsua_sip_siprec_use Config::siprecUse = PJSUA_SIP_SIPREC_OPTIONAL;
 
 
 class MyCall : public Call
@@ -147,7 +148,7 @@ public:
 
     void saveAudioMedia(AudioMedia audioMedio, int media_index)
     {
-        string path = getFullPath(soundPath, getWavFileName(media_index));
+        string path = getFullPath(Config::soundPath, getWavFileName(media_index));
         if(media_index == 0){
             recorder1.createRecorder(path);
             audioMedio.startTransmit(recorder1);
@@ -164,7 +165,7 @@ public:
         pjsua_call *call = &pjsua_var.calls[id];
         string metadata = string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
         
-        string path = getFullPath(metadataPath, getMetadataFileName());
+        string path = getFullPath(Config::metadataPath, getMetadataFileName());
         ofstream file(path);
         
         if (file.is_open()) {
@@ -188,7 +189,8 @@ public:
     virtual void onCallMediaState(OnCallMediaStateParam& params)
     {
         CallInfo callInfo = getInfo();
-        createNecessaryDirectories();
+        createDirectory(Config::soundPath);
+        createDirectory(Config::metadataPath);
         for (unsigned media_index = 0; media_index < callInfo.media.size(); media_index++)
         {
             if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO)
@@ -226,7 +228,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-    readConfig();
+    Config::loadConfig();
 
     Endpoint endpoint;
     endpoint.libCreate();
@@ -238,7 +240,7 @@ int main(int argc, char* argv[])
     endpoint.audDevManager().setNullDev();
 
     TransportConfig transportConfig;
-    transportConfig.port = listenPort;
+    transportConfig.port = Config::listenPort;
     try
     {
         endpoint.transportCreate(PJSIP_TRANSPORT_UDP, transportConfig);
@@ -253,10 +255,10 @@ int main(int argc, char* argv[])
     std::cout << "*** PJSUA2 STARTED ***" << std::endl;
 
     AccountConfig accountConfig;
-    accountConfig.idUri = "sip:" + user + "@192.168.21.88";
+    accountConfig.idUri = "sip:" + Config::user + "@192.168.21.88";
     accountConfig.regConfig.registrarUri = "";
     accountConfig.sipConfig.authCreds.clear();
-    accountConfig.callConfig.siprecUse = siprecUse;
+    accountConfig.callConfig.siprecUse = Config::siprecUse;
 
     // Create the account
     auto* account = new MyAccount;
