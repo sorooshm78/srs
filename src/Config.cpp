@@ -8,7 +8,7 @@
 #include <pjsua-lib/pjsua_internal.h>
 
 
-static void loadJsonConfig() {
+void Config::loadJsonConfig() {
         std::ifstream configFile(Config::configFilePath);
         if (!configFile.is_open()) {
             std::cout << "Warn: Cannot open configuration file: " << Config::configFilePath << std::endl;
@@ -32,14 +32,14 @@ static void loadJsonConfig() {
     }
 
 
-static void setConfigValue(const nlohmann::json& config, const std::string& key, std::string& variable) {
+void Config::setConfigValue(const nlohmann::json& config, const std::string& key, std::string& variable) {
     if (config.contains(key)) {
         variable = config[key].get<std::string>();
     }
 }
 
 
-static pjsua_sip_siprec_use getSiprecOption(const std::string& option) {
+pjsua_sip_siprec_use Config::getSiprecOption(const std::string& option) {
     if (option == "inactive") {
         return PJSUA_SIP_SIPREC_INACTIVE;
     } else if (option == "optional") {
