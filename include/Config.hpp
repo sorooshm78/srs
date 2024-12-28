@@ -1,6 +1,4 @@
 #include <iostream>
-#include <fstream>
-#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <pjsua2.hpp>
 
