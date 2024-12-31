@@ -20,8 +20,8 @@ To change the settings, create or edit the file located at `/etc/srs/config.json
 * `sound_path` : Where the sound of SIPREC calls is stored.
 * `siprec_mode` :  3 modes for use_siprec:
     * `optional`: In this mode, calls will be established regardless of whether they are SIPREC or not.
-    * `mandatory`: In this mode, only SIPREC calls are allowed. If a regular call is attempted, it will result in a "Bad Request" error.
-    * `inactive`: In this mode, only regular calls are allowed. If a SIPREC call is attempted, it will result in a "Bad Extension" error.
+    * `mandatory`: In this mode, only SIPREC calls are allowed. If a regular call is attempted, it will result in a "Bad Request" (Status Code 400) error.
+    * `inactive`: In this mode, only regular calls are allowed. If a SIPREC call is attempted, it will result in a "Bad Extension" (Status Code 420) error.
 
 ## Run
 ### Docker
