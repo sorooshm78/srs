@@ -68,7 +68,10 @@ int main(int argc, char* argv[])
     unique_ptr<SRSAccount> account = make_unique<SRSAccount>();
     account->create(accountConfig);
 
+    // Register the signal handler for SIGINT (Ctrl+C)
     signal(SIGINT, signalCallbackHandler);
+
+    // Main loop that keeps the application running until a shutdown signal is received
     while (!isShutdown)
     {
         sleep(1);

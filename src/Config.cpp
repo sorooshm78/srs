@@ -53,6 +53,7 @@ pjsua_sip_siprec_use Config::getSiprecOption(const std::string& option) {
 }
 
 
+// Sets the default variables
 std::string Config::configFilePath = "/etc/srs/config.json";
 std::string Config::listenIP = "192.168.21.88";
 std::string Config::listenPort = "5060";
