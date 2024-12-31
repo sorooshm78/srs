@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     accountConfig.callConfig.siprecUse = Config::siprecMode;
 
     // Create the account
-    SRSAccount* account = new SRSAccount;
+    unique_ptr<SRSAccount> account = make_unique<SRSAccount>();
     account->create(accountConfig);
 
     signal(SIGINT, signalCallbackHandler);
@@ -73,8 +73,6 @@ int main(int argc, char* argv[])
     {
         sleep(1);
     }
-
-    delete account;
 
     return 0;
 }
