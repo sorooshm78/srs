@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <pjsua2.hpp>
-
 #include <pjsua-lib/pjsua_internal.h>
 
 

@@ -1,6 +1,5 @@
 FROM ubuntu:22.04
 
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /src
@@ -15,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
-
 
 COPY . /src
 
