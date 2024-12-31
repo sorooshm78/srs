@@ -10,7 +10,6 @@
 
 #include <pjsua-lib/pjsua_internal.h>
 
-using json = nlohmann::json;
 using namespace pj;
 using namespace std;
 

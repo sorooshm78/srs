@@ -10,40 +10,37 @@
 #include <pjsua-lib/pjsua_internal.h>
 
 
-using namespace std;
-using namespace pj;
-
-SRSCall::SRSCall(Account& account, int callID)
+SRSCall::SRSCall(pj::Account& account, int callID)
     : pj::Call(account, callID)
 {
 }
 
-void SRSCall::printCallState(string state, string localUri, string remoteUri, long connectDuration, string callID)
+void SRSCall::printCallState(std::string state, std::string localUri, std::string remoteUri, long connectDuration, std::string callID)
 {
-    cout << "########## " << "Call-ID:" << callID;
-    cout << "\t";
-    cout << "State:" << state;
-    cout << "\t";
-    cout << "(" << remoteUri << " -> " << localUri << ")";
-    cout << "\t";
-    cout << "Duration:" << connectDuration << "sec";
-    cout << endl;
+    std::cout << "########## " << "Call-ID:" << callID;
+    std::cout << "\t";
+    std::cout << "State:" << state;
+    std::cout << "\t";
+    std::cout << "(" << remoteUri << " -> " << localUri << ")";
+    std::cout << "\t";
+    std::cout << "Duration:" << connectDuration << "sec";
+    std::cout << std::endl;
 }
 
-string SRSCall::getWavFileName(int media_index)
+std::string SRSCall::getWavFileName(int media_index)
 {
-    CallInfo callInfo = getInfo();
+    pj::CallInfo callInfo = getInfo();
     int recorder = media_index + 1;
-    return callInfo.callIdString + "-" + to_string(recorder) +  ".wav";
+    return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
 }
 
-string SRSCall::getMetadataFileName()
+std::string SRSCall::getMetadataFileName()
 {
-    CallInfo callInfo = getInfo();
+    pj::CallInfo callInfo = getInfo();
     return callInfo.callIdString + "-" + "Metadata" +  ".txt";
 }
 
-string SRSCall::getFullPath(string path, string filename)
+std::string SRSCall::getFullPath(std::string path, std::string filename)
 {
     if (path.back() != '/' && path.back() != '\\') {
         path += '/';
@@ -51,9 +48,9 @@ string SRSCall::getFullPath(string path, string filename)
     return path + filename;
 }
 
-void SRSCall::saveAudioMedia(AudioMedia audioMedio, int media_index)
+void SRSCall::saveAudioMedia(pj::AudioMedia audioMedio, int media_index)
 {
-    string path = getFullPath(Config::soundPath, getWavFileName(media_index));
+    std::string path = getFullPath(Config::soundPath, getWavFileName(media_index));
     if(media_index == 0){
         recorder1.createRecorder(path);
         audioMedio.startTransmit(recorder1);
@@ -68,22 +65,22 @@ void SRSCall::saveMetadata()
 {
     int id = getId();
     pjsua_call *call = &pjsua_var.calls[id];
-    string metadata = string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
+    std::string metadata = std::string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
     
-    string path = getFullPath(Config::metadataPath, getMetadataFileName());
-    ofstream file(path);
+    std::string path = getFullPath(Config::metadataPath, getMetadataFileName());
+    std::ofstream file(path);
     
     if (file.is_open()) {
         file << metadata;
         file.close();
     } else {
-        cout << "Unable to open file for writing!" << endl;
+        std::cout << "Unable to open file for writing!" << std::endl;
     }
 }
 
-void SRSCall::onCallState(OnCallStateParam& param)
+void SRSCall::onCallState(pj::OnCallStateParam& param)
 {
-    CallInfo callInfo = getInfo();
+    pj::CallInfo callInfo = getInfo();
     if (callInfo.state == PJSIP_INV_STATE_CONNECTING || callInfo.state == PJSIP_INV_STATE_DISCONNECTED)
     {
         printCallState(callInfo.stateText, callInfo.localUri, callInfo.remoteUri, callInfo.connectDuration.sec,
@@ -91,25 +88,25 @@ void SRSCall::onCallState(OnCallStateParam& param)
     }
 }
 
-void SRSCall::onCallMediaState(OnCallMediaStateParam& params)
+void SRSCall::onCallMediaState(pj::OnCallMediaStateParam& params)
 {
-    CallInfo callInfo = getInfo();
+    pj::CallInfo callInfo = getInfo();
     createDirectory(Config::soundPath);
     createDirectory(Config::metadataPath);
     for (unsigned media_index = 0; media_index < callInfo.media.size(); media_index++)
     {
         if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO)
         {
-            AudioMedia audioMedia = getAudioMedia(media_index);
+            pj::AudioMedia audioMedia = getAudioMedia(media_index);
             saveAudioMedia(audioMedia, media_index);
         }
     }
     saveMetadata();
 }
 
-void SRSCall::createDirectory(string path)
+void SRSCall::createDirectory(std::string path)
 {
-    if (!filesystem::exists(path)) {
-        filesystem::create_directories(path);
+    if (!std::filesystem::exists(path)) {
+        std::filesystem::create_directories(path);
     }
 }

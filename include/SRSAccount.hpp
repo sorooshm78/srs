@@ -7,5 +7,4 @@ class SRSAccount : public pj::Account
 public:
     void onRegState(pj::OnRegStateParam& param);
     void onIncomingCall(pj::OnIncomingCallParam& incomingParam);
-
 };

@@ -1,5 +1,5 @@
 # srs
-session record server
+Session Recording Server
 
 ## Required
 ```bash

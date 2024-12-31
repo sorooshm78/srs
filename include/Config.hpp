@@ -5,7 +5,6 @@
 #include <pjsua-lib/pjsua_internal.h>
 
 
-
 class Config {
 public:
     static std::string configFilePath;

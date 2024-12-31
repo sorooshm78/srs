@@ -4,20 +4,17 @@
 #include <iostream>
 
 
-using namespace std;
-using namespace pj;
-
-void SRSAccount::onRegState(OnRegStateParam& param)
+void SRSAccount::onRegState(pj::OnRegStateParam& param)
 {
-    AccountInfo accountInfo = getInfo();
-    cout << (accountInfo.regIsActive ? "*** Register:" : "*** Unregister:")
-        << " code=" << param.code << endl;
+    pj::AccountInfo accountInfo = getInfo();
+    std::cout << (accountInfo.regIsActive ? "*** Register:" : "*** Unregister:")
+        << " code=" << param.code << std::endl;
 }
 
-void  SRSAccount::onIncomingCall(OnIncomingCallParam& incomingParam)
+void  SRSAccount::onIncomingCall(pj::OnIncomingCallParam& incomingParam)
 {
     SRSCall* call = new SRSCall(*this, incomingParam.callId);
-    CallOpParam param;
+    pj::CallOpParam param;
     param.statusCode = PJSIP_SC_OK;
     param.opt.audioCount = 2;
     param.opt.videoCount = 0;
