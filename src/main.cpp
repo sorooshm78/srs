@@ -1,20 +1,18 @@
 #include "SRSAccount.hpp"
 #include "Config.hpp"
-
 #include <pjsua2.hpp>
 #include <iostream>
 #include <csignal>
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
-
 #include <pjsua-lib/pjsua_internal.h>
 
 using namespace pj;
 using namespace std;
 
-bool isShutdown = false;
 
+bool isShutdown = false;
 
 enum loglevel
 {
@@ -27,12 +25,10 @@ enum loglevel
     DETAILED_TRACE,
 };
 
-
 void signalCallbackHandler(int signum)
 {
     isShutdown = true;
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -63,10 +59,10 @@ int main(int argc, char* argv[])
     std::cout << "*** PJSUA2 STARTED ***" << std::endl;
 
     AccountConfig accountConfig;
-    accountConfig.idUri = "sip:" + Config::user + "@192.168.21.88";
+    accountConfig.idUri = "sip:" + Config::user + "@" + Config::listenIP;
     accountConfig.regConfig.registrarUri = "";
     accountConfig.sipConfig.authCreds.clear();
-    accountConfig.callConfig.siprecUse = Config::siprecUse;
+    accountConfig.callConfig.siprecUse = Config::siprecMode;
 
     // Create the account
     SRSAccount* account = new SRSAccount;

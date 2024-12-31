@@ -1,12 +1,10 @@
 #include "SRSCall.hpp"
 #include "Config.hpp"
-
 #include <pjsua2.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <filesystem> 
-
 #include <pjsua-lib/pjsua_internal.h>
 
 
