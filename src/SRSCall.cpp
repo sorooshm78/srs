@@ -64,7 +64,6 @@ void SRSCall::saveMetadata()
     int id = getId();
     pjsua_call *call = &pjsua_var.calls[id];
     std::string metadata = std::string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
-    
     std::string path = getFullPath(Config::metadataPath, getMetadataFileName());
     std::ofstream file(path);
     
