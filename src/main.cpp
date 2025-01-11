@@ -15,7 +15,7 @@ using namespace std;
 // Flag to indicate whether a shutdown signal has been received
 bool isShutdown = false;
 
-// Signal handler function that sets the shutdown flag when a signal is received
+/* Signal handler function that sets the shutdown flag when a signal is received */
 void signalCallbackHandler(int signum)
 {
     isShutdown = true;
