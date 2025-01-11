@@ -55,7 +55,7 @@ sudo apt-get install libasound2-dev
 ```
 
 ```bash
-sudo apt-get install libssldev
+sudo apt-get install libssl-dev
 ```
 
 ```bash
