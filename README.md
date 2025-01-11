@@ -36,7 +36,7 @@ To change the settings, create or edit the file located at `/etc/srs/config.json
 ### Docker
 Build image
 ```
-docker build *t session_recording_server .
+docker build -t session_recording_server .
 ```
 
 Run container
@@ -47,23 +47,23 @@ docker run session_recording_server
 ### Build
 #### Install requirment package
 ```bash
-sudo apt install build*essential
+sudo apt install build-essential
 ```
 
 ```bash
-sudo apt*get install libasound2*dev
+sudo apt-get install libasound2-dev
 ```
 
 ```bash
-sudo apt*get install libssl*dev
+sudo apt-get install libssldev
 ```
 
 ```bash
-sudo apt install nlohmann*json3*dev
+sudo apt install nlohmann-json3-dev
 ```
 
 ```bash
-sudo apt install pkg*config 
+sudo apt install pkg-config 
 ```
 
 #### Building the source code
