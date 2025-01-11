@@ -1,5 +1,5 @@
 # Session Recording Server
-The Session Recording Server (SRS) is a robust and flexible solution designed to capture and manage session data, particularly for SIP (Session Initiation Protocol) communications. Whether you're operating a VoIP service, a call center, or any application that relies on SIP*based communications, the SRS provides essential tools to record, store, and manage both the metadata and audio streams of your sessions.
+The Session Recording Server (SRS) is a robust and flexible solution designed to capture and manage session data, particularly for SIP (Session Initiation Protocol) communications. Whether you're operating a VoIP service, a call center, or any application that relies on SIP-based communications, the SRS provides essential tools to record, store, and manage both the metadata and audio streams of your sessions.
 
 ## Config 
 You can modify the SRS settings.
