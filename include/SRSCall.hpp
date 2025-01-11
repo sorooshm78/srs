@@ -24,7 +24,7 @@ public:
     /**
      * Notify application when call state has changed.
      * Application may then query the call info to get the
-     * detail of call states by calling getInfo() function.
+     * detail call states by calling getInfo() function.
      */
     virtual void onCallState(pj::OnCallStateParam& param);
 
