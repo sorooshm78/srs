@@ -12,8 +12,10 @@ using namespace pj;
 using namespace std;
 
 
+// Flag to indicate whether a shutdown signal has been received
 bool isShutdown = false;
 
+// Signal handler function that sets the shutdown flag when a signal is received
 void signalCallbackHandler(int signum)
 {
     isShutdown = true;
@@ -29,6 +31,7 @@ int main(int argc, char* argv[])
     EpConfig endpointConfig;
     endpointConfig.logConfig.level = Config::logLevel;
     endpoint.libInit(endpointConfig);
+    // Disable audio input/output with a null device
     endpoint.audDevManager().setNullDev();
 
     TransportConfig transportConfig;
