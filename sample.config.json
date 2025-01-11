@@ -3,5 +3,6 @@
     "listen_port": "5060",
     "metadata_path": "/var/srs/metadata",
     "sound_path": "/var/srs/sound",
-    "siprec_mode": "optional"
+    "siprec_mode": "optional",
+    "log_level": "info"
 }

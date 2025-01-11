@@ -14,17 +14,6 @@ using namespace std;
 
 bool isShutdown = false;
 
-enum loglevel
-{
-    FATAL_ERROR = 0,
-    ERROR,
-    WARNING,
-    INFO,
-    DEBUG,
-    TRACE,
-    DETAILED_TRACE,
-};
-
 void signalCallbackHandler(int signum)
 {
     isShutdown = true;
@@ -38,8 +27,7 @@ int main(int argc, char* argv[])
     endpoint.libCreate();
 
     EpConfig endpointConfig;
-    endpointConfig.logConfig.level = loglevel::WARNING;
-    endpointConfig.logConfig.consoleLevel = loglevel::WARNING;
+    endpointConfig.logConfig.level = Config::logLevel;
     endpoint.libInit(endpointConfig);
     endpoint.audDevManager().setNullDev();
 
