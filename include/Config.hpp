@@ -15,7 +15,6 @@ enum LogLevel
     DETAILED_TRACE,
 };
 
-
 class Config {
 public:
     static std::string configFilePath;
@@ -39,6 +38,6 @@ public:
     /* Converts the config string value to LogLevel.*/
     static LogLevel getLogLevelOption(const std::string& option);
 
-    /* Sets the variables */
-    static void setConfigValue(const nlohmann::json& config, const std::string& key, std::string& variable);
+    /* Sets the variables from config file */
+    static void setVariableFromConfigFile(const nlohmann::json& config, const std::string& key, std::string& variable);
 };

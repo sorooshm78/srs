@@ -39,13 +39,13 @@ private:
     std::string getMetadataFileName();
 
     /* Constructs a full file path by combining a directory path and a filename. */
-    std::string getFullPath(std::string path, std::string filename);
+    std::string getFullPath(std::string path, std::string FileName);
     
     /* Creates a directory at the specified path if it does not already exist. */
     void createDirectory(std::string path);
     
     /* Store the call audio in a ".wav" file. */
-    void saveAudioMedia(pj::AudioMedia audioMedio, int media_index);
+    void saveAudioMedia(pj::AudioMedia audioMedio, int mediaIndex);
     
     /* Store the SIPREC call metadata. */
     void saveMetadata();

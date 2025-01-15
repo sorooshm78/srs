@@ -38,31 +38,31 @@ std::string SRSCall::getMetadataFileName()
     return callInfo.callIdString + "-" + "Metadata" +  ".txt";
 }
 
-std::string SRSCall::getFullPath(std::string path, std::string filename)
+std::string SRSCall::getFullPath(std::string path, std::string fileName)
 {
     if (path.back() != '/' && path.back() != '\\') {
         path += '/';
     }
-    return path + filename;
+    return path + fileName;
 }
 
-void SRSCall::saveAudioMedia(pj::AudioMedia audioMedio, int media_index)
+void SRSCall::saveAudioMedia(pj::AudioMedia audioMedia, int mediaIndex)
 {
-    std::string path = getFullPath(Config::soundPath, getWavFileName(media_index));
-    if(media_index == 0){
+    std::string path = getFullPath(Config::soundPath, getWavFileName(mediaIndex));
+    if(mediaIndex == 0){
         recorder1.createRecorder(path);
-        audioMedio.startTransmit(recorder1);
+        audioMedia.startTransmit(recorder1);
     }
-    if(media_index == 1){
+    if(mediaIndex == 1){
         recorder2.createRecorder(path);
-        audioMedio.startTransmit(recorder2);
+        audioMedia.startTransmit(recorder2);
     }
 }
 
 void SRSCall::saveMetadata()
 {
-    int id = getId();
-    pjsua_call *call = &pjsua_var.calls[id];
+    int callId = getId();
+    pjsua_call *call = &pjsua_var.calls[callId];
     std::string metadata = std::string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
     std::string path = getFullPath(Config::metadataPath, getMetadataFileName());
     std::ofstream file(path);

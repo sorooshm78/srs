@@ -17,11 +17,11 @@ void Config::loadJsonConfig() {
             nlohmann::json config;
             configFile >> config;
 
-            Config::setConfigValue(config, "listen_ip", Config::listenIP);  
-            Config::setConfigValue(config, "listen_port", Config::listenPort);  
-            Config::setConfigValue(config, "user", Config::user);
-            Config::setConfigValue(config, "metadata_path", Config::metadataPath);
-            Config::setConfigValue(config, "sound_path", Config::soundPath);
+            Config::setVariableFromConfigFile(config, "listen_ip", Config::listenIP);  
+            Config::setVariableFromConfigFile(config, "listen_port", Config::listenPort);  
+            Config::setVariableFromConfigFile(config, "user", Config::user);
+            Config::setVariableFromConfigFile(config, "metadata_path", Config::metadataPath);
+            Config::setVariableFromConfigFile(config, "sound_path", Config::soundPath);
 
             if (config.contains("siprec_mode")) {
                 Config::siprecMode = Config::getSiprecOption(config["siprec_mode"].get<std::string>());
@@ -35,7 +35,7 @@ void Config::loadJsonConfig() {
     }
 
 
-void Config::setConfigValue(const nlohmann::json& config, const std::string& key, std::string& variable) {
+void Config::setVariableFromConfigFile(const nlohmann::json& config, const std::string& key, std::string& variable) {
     if (config.contains(key)) {
         variable = config[key].get<std::string>();
     }
