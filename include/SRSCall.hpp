@@ -33,19 +33,19 @@ private:
     pj::AudioMediaRecorder recorder2;
 
     /* Generates a WAV file name based on the call ID and media index. */
-    std::string getWavFileName(int media_index);
+    std::string getWavFileName(int mediaIndex);
 
     /* Generates a metadata file name based on the call ID. */
     std::string getMetadataFileName();
 
     /* Constructs a full file path by combining a directory path and a filename. */
-    std::string getFullPath(std::string path, std::string FileName);
+    std::string getFullPath(std::string path, std::string fileName);
     
     /* Creates a directory at the specified path if it does not already exist. */
     void createDirectory(std::string path);
     
     /* Store the call audio in a ".wav" file. */
-    void saveAudioMedia(pj::AudioMedia audioMedio, int mediaIndex);
+    void saveAudioMedia(pj::AudioMedia audioMedia, int mediaIndex);
     
     /* Store the SIPREC call metadata. */
     void saveMetadata();

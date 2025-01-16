@@ -78,7 +78,7 @@ LogLevel Config::getLogLevelOption(const std::string& option) {
 
 // Sets the default variables
 std::string Config::configFilePath = "/etc/srs/config.json";
-std::string Config::listenIP = "192.168.21.88";
+std::string Config::listenIP = "127.0.0.1";
 std::string Config::listenPort = "5060";
 std::string Config::user = "1010";
 std::string Config::metadataPath = "/var/srs/metadata";

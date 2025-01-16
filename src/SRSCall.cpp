@@ -25,10 +25,10 @@ void SRSCall::printCallState(std::string state, std::string localUri, std::strin
     std::cout << std::endl;
 }
 
-std::string SRSCall::getWavFileName(int media_index)
+std::string SRSCall::getWavFileName(int mediaIndex)
 {
     pj::CallInfo callInfo = getInfo();
-    int recorder = media_index + 1;
+    int recorder = mediaIndex + 1;
     return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
 }
 
@@ -90,12 +90,12 @@ void SRSCall::onCallMediaState(pj::OnCallMediaStateParam& params)
     pj::CallInfo callInfo = getInfo();
     createDirectory(Config::soundPath);
     createDirectory(Config::metadataPath);
-    for (unsigned media_index = 0; media_index < callInfo.media.size(); media_index++)
+    for (unsigned mediaIndex = 0; mediaIndex < callInfo.media.size(); mediaIndex++)
     {
-        if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO)
+        if (callInfo.media[mediaIndex].type == PJMEDIA_TYPE_AUDIO)
         {
-            pj::AudioMedia audioMedia = getAudioMedia(media_index);
-            saveAudioMedia(audioMedia, media_index);
+            pj::AudioMedia audioMedia = getAudioMedia(mediaIndex);
+            saveAudioMedia(audioMedia, mediaIndex);
         }
     }
     saveMetadata();
