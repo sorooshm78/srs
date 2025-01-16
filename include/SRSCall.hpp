@@ -32,7 +32,9 @@ private:
     pj::AudioMediaRecorder recorder1;
     pj::AudioMediaRecorder recorder2;
 
-    /* Generates a WAV file name based on the call ID and media index. */
+    /* Generates a WAV file name based on the call ID and media index.
+     * mediaIndex can only be 0 or 1
+     */
     std::string getWavFileName(int mediaIndex);
 
     /* Generates a metadata file name based on the call ID. */

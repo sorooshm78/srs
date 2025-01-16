@@ -38,6 +38,6 @@ public:
     /* Converts the config string value to LogLevel.*/
     static LogLevel getLogLevelOption(const std::string& option);
 
-    /* Sets the variables from config file */
+    /* Sets the variable with 'key' name from config file */
     static void setVariableFromConfigFile(const nlohmann::json& config, const std::string& key, std::string& variable);
 };
