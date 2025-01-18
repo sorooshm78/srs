@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY . /src
 
+RUN git clone https://github.com/pjsip/pjproject.git
 WORKDIR /src/pjproject
 RUN ./configure
 

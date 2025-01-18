@@ -1,0 +1,9 @@
+services:
+  srs:
+    build: .
+    container_name: srs
+    network_mode: "host" 
+    restart: always
+    volumes:
+      - ./config.json:/etc/srs/config.json
+      - ./data:/var/srs
