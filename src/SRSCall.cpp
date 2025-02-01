@@ -26,20 +26,20 @@ void SRSCall::printCallState(const std::string& state, const std::string& localU
     std::cout << std::endl;
 }
 
-auto SRSCall::getWavFileName(int mediaIndex) -> std::string
+std::string SRSCall::getWavFileName(int mediaIndex)
 {
     pj::CallInfo callInfo = getInfo();
     int recorder = mediaIndex + 1;
     return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
 }
 
-auto SRSCall::getMetadataFileName() -> std::string
+std::string SRSCall::getMetadataFileName()
 {
     pj::CallInfo callInfo = getInfo();
     return callInfo.callIdString + "-" + "Metadata" +  ".txt";
 }
 
-auto SRSCall::getFullPath(std::string path, const std::string& fileName) -> std::string
+std::string SRSCall::getFullPath(std::string path, const std::string& fileName)
 {
     Expects(!path.empty());
     Expects(!fileName.empty());

@@ -28,7 +28,7 @@ void signalCallbackHandler(int  /*signum*/)
     isShutdown = true;
 }
 
-auto main() -> int
+int main()
 {
     Config::loadJsonConfig();
 

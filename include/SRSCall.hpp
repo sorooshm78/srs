@@ -36,13 +36,13 @@ private:
     /* Generates a WAV file name based on the call ID and media index.
      * mediaIndex can only be 0 or 1
      */
-    auto getWavFileName(int mediaIndex) -> std::string;
+    std::string getWavFileName(int mediaIndex);
 
     /* Generates a metadata file name based on the call ID. */
-    auto getMetadataFileName() -> std::string;
+    std::string getMetadataFileName();
 
     /* Constructs a full file path by combining a directory path and a filename. */
-    auto getFullPath(std::string path, const std::string& fileName) -> std::string;
+    std::string getFullPath(std::string path, const std::string& fileName);
     
     /* Creates a directory at the specified path if it does not already exist. */
     void createDirectory(const std::string& path);

@@ -33,10 +33,10 @@ public:
     static void loadJsonConfig();
 
     /* Converts the config string value to pjsua_sip_siprec_use. */
-    static auto getSiprecOption(const std::string& option) -> pjsua_sip_siprec_use;
+    static pjsua_sip_siprec_use getSiprecOption(const std::string& option);
     
     /* Converts the config string value to LogLevel.*/
-    static auto getLogLevelOption(const std::string& option) -> LogLevel;
+    static LogLevel getLogLevelOption(const std::string& option);
 
     /* Sets the variable with 'key' name from config file */
     static void setVariableFromConfigFile(const nlohmann::json& config, const std::string& key, std::string& variable);
