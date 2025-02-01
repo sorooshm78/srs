@@ -60,21 +60,27 @@ auto Config::getSiprecOption(const std::string& option) -> pjsua_sip_siprec_use 
 auto Config::getLogLevelOption(const std::string& option) -> LogLevel {
     if (option == "fatal_error") {
         return LogLevel::FATAL_ERROR;
-    } else if (option == "error") {
+    } 
+    if (option == "error") {
         return LogLevel::ERROR;
-    } else if (option == "warning") {
-        return LogLevel::WARNING;
-    } else if (option == "info") {
-        return LogLevel::INFO;
-    } else if (option == "debug") {
-        return LogLevel::DEBUG;
-    } else if (option == "trace") {
-        return LogLevel::TRACE;
-    } else if (option == "detailed_trace") {
-        return LogLevel::DETAILED_TRACE;
-    } else {
-        throw std::invalid_argument("Invalid log_level value in configuration.");
     }
+    if (option == "warning") {
+        return LogLevel::WARNING;
+    } 
+    if (option == "info") {
+        return LogLevel::INFO;
+    }
+    if (option == "debug") {
+        return LogLevel::DEBUG;
+    }
+    if (option == "trace") {
+        return LogLevel::TRACE;
+    }
+    if (option == "detailed_trace") {
+        return LogLevel::DETAILED_TRACE;
+    }
+    
+    throw std::invalid_argument("Invalid log_level value in configuration.");
 }
 
 
