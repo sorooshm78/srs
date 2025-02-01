@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem> 
+#include <gsl/gsl>
 #include <pjsua-lib/pjsua_internal.h>
 
 
@@ -40,6 +41,9 @@ std::string SRSCall::getMetadataFileName()
 
 std::string SRSCall::getFullPath(std::string path, std::string fileName)
 {
+    Expects(!path.empty());
+    Expects(!fileName.empty());
+
     if (path.back() != '/' && path.back() != '\\') {
         path += '/';
     }
@@ -48,6 +52,7 @@ std::string SRSCall::getFullPath(std::string path, std::string fileName)
 
 void SRSCall::saveAudioMedia(pj::AudioMedia audioMedia, int mediaIndex)
 {
+    Expects((mediaIndex == 0) || (mediaIndex == 1));
     std::string path = getFullPath(Config::soundPath, getWavFileName(mediaIndex));
     if(mediaIndex == 0){
         recorder1.createRecorder(path);
@@ -63,16 +68,14 @@ void SRSCall::saveMetadata()
 {
     int callId = getId();
     pjsua_call *call = &pjsua_var.calls[callId];
+    Expects(call != nullptr);
     std::string metadata = std::string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
     std::string path = getFullPath(Config::metadataPath, getMetadataFileName());
     std::ofstream file(path);
     
-    if (file.is_open()) {
-        file << metadata;
-        file.close();
-    } else {
-        std::cout << "Unable to open file for writing!" << std::endl;
-    }
+    Expects(file.is_open());
+    file << metadata;
+    file.close();
 }
 
 void SRSCall::onCallState(pj::OnCallStateParam& param)
@@ -106,4 +109,5 @@ void SRSCall::createDirectory(std::string path)
     if (!std::filesystem::exists(path)) {
         std::filesystem::create_directories(path);
     }
+    Ensures(std::filesystem::exists(path));
 }
