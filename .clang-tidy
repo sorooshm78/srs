@@ -1,9 +1,10 @@
 Checks: >
-    'modernize-*,
+    modernize-*,
     performance-*,
     security-*,
     readability-*',
-    misc-*
+    misc-*,
+    bugprone-*
 WarningsAsErrors: '*'
 HeaderFilterRegex: './include/.*'
 ExtraArgs:

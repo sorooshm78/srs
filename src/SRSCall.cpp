@@ -93,7 +93,7 @@ void SRSCall::onCallMediaState(pj::OnCallMediaStateParam&  /*params*/)
     pj::CallInfo callInfo = getInfo();
     createDirectory(Config::soundPath);
     createDirectory(Config::metadataPath);
-    for (unsigned mediaIndex = 0; mediaIndex < callInfo.media.size(); mediaIndex++)
+    for (int mediaIndex = 0; mediaIndex < callInfo.media.size(); mediaIndex++)
     {
         if (callInfo.media[mediaIndex].type == PJMEDIA_TYPE_AUDIO)
         {
