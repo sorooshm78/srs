@@ -82,3 +82,6 @@ Go to `build` directory then run this command
 ```
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 ```
+```
+./clang-tidy.sh
+```

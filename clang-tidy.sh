@@ -1,0 +1,1 @@
+clang-tidy src/*.cpp -p build -- -I/root/github/srs/include -std=c++17
