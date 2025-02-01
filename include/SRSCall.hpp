@@ -19,14 +19,14 @@ public:
      * this callback will also be called to report ICE negotiation
      * failure.
      */
-    virtual void onCallMediaState(pj::OnCallMediaStateParam& params);
+    void onCallMediaState(pj::OnCallMediaStateParam& params) override;
     
     /**
      * Notify application when call state has changed.
      * Application may then query the call info to get the
      * detail call states by calling getInfo() function.
      */
-    virtual void onCallState(pj::OnCallStateParam& param);
+    void onCallState(pj::OnCallStateParam& param) override;
 
 private:
     pj::AudioMediaRecorder recorder1;
