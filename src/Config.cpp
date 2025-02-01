@@ -45,13 +45,15 @@ void Config::setVariableFromConfigFile(const nlohmann::json& config, const std::
 auto Config::getSiprecOption(const std::string& option) -> pjsua_sip_siprec_use {
     if (option == "inactive") {
         return PJSUA_SIP_SIPREC_INACTIVE;
-    } else if (option == "optional") {
+    } 
+    if (option == "optional") {
         return PJSUA_SIP_SIPREC_OPTIONAL;
-    } else if (option == "mandatory") {
-        return PJSUA_SIP_SIPREC_MANDATORY;
-    } else {
-        throw std::invalid_argument("Invalid siprec_mode value in configuration.");
     }
+    if (option == "mandatory") {
+        return PJSUA_SIP_SIPREC_MANDATORY;
+    } 
+    
+    throw std::invalid_argument("Invalid siprec_mode value in configuration.");
 }
 
 
