@@ -78,7 +78,7 @@ void SRSCall::saveMetadata()
     file.close();
 }
 
-void SRSCall::onCallState(pj::OnCallStateParam& param)
+void SRSCall::onCallState(pj::OnCallStateParam&  /*param*/)
 {
     pj::CallInfo callInfo = getInfo();
     if (callInfo.state == PJSIP_INV_STATE_CONNECTING || callInfo.state == PJSIP_INV_STATE_DISCONNECTED)
@@ -88,7 +88,7 @@ void SRSCall::onCallState(pj::OnCallStateParam& param)
     }
 }
 
-void SRSCall::onCallMediaState(pj::OnCallMediaStateParam& params)
+void SRSCall::onCallMediaState(pj::OnCallMediaStateParam&  /*params*/)
 {
     pj::CallInfo callInfo = getInfo();
     createDirectory(Config::soundPath);

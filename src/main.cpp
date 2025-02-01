@@ -16,7 +16,7 @@ using namespace std;
 bool isShutdown = false;
 
 /* Signal handler function that sets the isShutdown flag when a signal is received */
-void signalCallbackHandler(int signum)
+void signalCallbackHandler(int  /*signum*/)
 {
     isShutdown = true;
 }
