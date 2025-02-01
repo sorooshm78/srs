@@ -82,7 +82,7 @@ auto Config::getLogLevelOption(const std::string& option) -> LogLevel {
 std::string Config::configFilePath = "/etc/srs/config.json";
 std::string Config::listenIP = "127.0.0.1";
 std::string Config::listenPort = "5060";
-std::string Config::user = "1010";
+std::string Config::user = "srs";
 std::string Config::metadataPath = "/var/srs/metadata";
 std::string Config::soundPath = "/var/srs/sound";
 LogLevel Config::logLevel = LogLevel::DEBUG;
