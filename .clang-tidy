@@ -1,0 +1,6 @@
+Checks: 'modernize-*'
+WarningsAsErrors: '*'
+HeaderFilterRegex: './include/.*'
+ExtraArgs:
+  - -I./include
+  - -std=c++17

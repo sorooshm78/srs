@@ -1,1 +1,1 @@
-clang-tidy src/*.cpp -p build --header-filter=./include/.* -- -I./include -std=c++17
+clang-tidy src/*.cpp -p build
