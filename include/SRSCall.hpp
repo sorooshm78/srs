@@ -1,5 +1,6 @@
 #include <pjsua2.hpp>
 #include <string>
+#include <cstdint>
 #include <iostream>
 
 
@@ -7,10 +8,10 @@ class SRSCall : public pj::Call
 {
 public:
     /* Constructor */
-    SRSCall(pj::Account& account, int callID = PJSUA_INVALID_ID);
+    explicit SRSCall(pj::Account& account, int callID = PJSUA_INVALID_ID);
 
     /* Prints the current state of a call */
-    void printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, long connectDuration, const std::string& callID);
+    void printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, int64_t connectDuration, const std::string& callID);
 
     /**
      * Notify application when media state in the call has changed.

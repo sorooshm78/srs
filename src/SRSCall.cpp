@@ -14,7 +14,7 @@ SRSCall::SRSCall(pj::Account& account, int callID)
 {
 }
 
-void SRSCall::printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, long connectDuration, const std::string& callID)
+void SRSCall::printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, int64_t connectDuration, const std::string& callID)
 {
     std::cout << "########## " << "Call-ID:" << callID;
     std::cout << "\t";

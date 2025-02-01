@@ -4,7 +4,10 @@ Checks: >
     security-*,
     readability-*',
     misc-*,
-    bugprone-*
+    bugprone-*,
+    clang-analyzer-*,
+    google-*,
+    security-*
 WarningsAsErrors: '*'
 HeaderFilterRegex: './include/.*'
 ExtraArgs:

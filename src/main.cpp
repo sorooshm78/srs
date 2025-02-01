@@ -8,9 +8,16 @@
 #include <nlohmann/json.hpp>
 #include <pjsua-lib/pjsua_internal.h>
 
-using namespace pj;
-using namespace std;
 
+using pj::Endpoint;
+using pj::EpConfig;
+using pj::TransportConfig;
+using pj::AccountConfig;
+using pj::Error;
+using std::cout;
+using std::endl;
+using std::unique_ptr;
+using std::make_unique;
 
 // Flag to indicate whether a shutdown signal has been received
 bool isShutdown = false;
@@ -42,12 +49,12 @@ auto main() -> int
     }
     catch (Error& err)
     {
-        std::cout << err.info() << std::endl;
+        cout << err.info() << endl;
         return 1;
     }
 
     endpoint.libStart();
-    std::cout << "*** PJSUA2 STARTED ***" << std::endl;
+    cout << "*** PJSUA2 STARTED ***" << endl;
 
     AccountConfig accountConfig;
     accountConfig.idUri = "sip:" + Config::user + "@" + Config::listenIP;
