@@ -14,7 +14,7 @@ SRSCall::SRSCall(pj::Account& account, int callID)
 {
 }
 
-void SRSCall::printCallState(std::string state, std::string localUri, std::string remoteUri, long connectDuration, std::string callID)
+void SRSCall::printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, long connectDuration, const std::string& callID)
 {
     std::cout << "########## " << "Call-ID:" << callID;
     std::cout << "\t";
@@ -26,20 +26,20 @@ void SRSCall::printCallState(std::string state, std::string localUri, std::strin
     std::cout << std::endl;
 }
 
-std::string SRSCall::getWavFileName(int mediaIndex)
+auto SRSCall::getWavFileName(int mediaIndex) -> std::string
 {
     pj::CallInfo callInfo = getInfo();
     int recorder = mediaIndex + 1;
     return callInfo.callIdString + "-" + std::to_string(recorder) +  ".wav";
 }
 
-std::string SRSCall::getMetadataFileName()
+auto SRSCall::getMetadataFileName() -> std::string
 {
     pj::CallInfo callInfo = getInfo();
     return callInfo.callIdString + "-" + "Metadata" +  ".txt";
 }
 
-std::string SRSCall::getFullPath(std::string path, std::string fileName)
+auto SRSCall::getFullPath(std::string path, const std::string& fileName) -> std::string
 {
     Expects(!path.empty());
     Expects(!fileName.empty());
@@ -50,7 +50,7 @@ std::string SRSCall::getFullPath(std::string path, std::string fileName)
     return path + fileName;
 }
 
-void SRSCall::saveAudioMedia(pj::AudioMedia audioMedia, int mediaIndex)
+void SRSCall::saveAudioMedia(const pj::AudioMedia& audioMedia, int mediaIndex)
 {
     Expects((mediaIndex == 0) || (mediaIndex == 1));
     std::string path = getFullPath(Config::soundPath, getWavFileName(mediaIndex));
@@ -104,7 +104,7 @@ void SRSCall::onCallMediaState(pj::OnCallMediaStateParam& params)
     saveMetadata();
 }
 
-void SRSCall::createDirectory(std::string path)
+void SRSCall::createDirectory(const std::string& path)
 {
     if (!std::filesystem::exists(path)) {
         std::filesystem::create_directories(path);

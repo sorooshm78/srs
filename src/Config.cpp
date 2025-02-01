@@ -42,7 +42,7 @@ void Config::setVariableFromConfigFile(const nlohmann::json& config, const std::
 }
 
 
-pjsua_sip_siprec_use Config::getSiprecOption(const std::string& option) {
+auto Config::getSiprecOption(const std::string& option) -> pjsua_sip_siprec_use {
     if (option == "inactive") {
         return PJSUA_SIP_SIPREC_INACTIVE;
     } else if (option == "optional") {
@@ -55,7 +55,7 @@ pjsua_sip_siprec_use Config::getSiprecOption(const std::string& option) {
 }
 
 
-LogLevel Config::getLogLevelOption(const std::string& option) {
+auto Config::getLogLevelOption(const std::string& option) -> LogLevel {
     if (option == "fatal_error") {
         return LogLevel::FATAL_ERROR;
     } else if (option == "error") {

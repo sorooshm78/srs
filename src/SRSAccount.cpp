@@ -7,7 +7,7 @@
 
 void SRSAccount::onIncomingCall(pj::OnIncomingCallParam& incomingParam)
 {
-    SRSCall* call = new SRSCall(*this, incomingParam.callId);
+    auto* call = new SRSCall(*this, incomingParam.callId);
     Expects(call != nullptr);
     pj::CallOpParam param;
     param.statusCode = PJSIP_SC_OK;

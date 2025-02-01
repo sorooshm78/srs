@@ -10,7 +10,7 @@ public:
     SRSCall(pj::Account& account, int callID = PJSUA_INVALID_ID);
 
     /* Prints the current state of a call */
-    void printCallState(std::string state, std::string localUri, std::string remoteUri, long connectDuration, std::string callID);
+    void printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, long connectDuration, const std::string& callID);
 
     /**
      * Notify application when media state in the call has changed.
@@ -35,19 +35,19 @@ private:
     /* Generates a WAV file name based on the call ID and media index.
      * mediaIndex can only be 0 or 1
      */
-    std::string getWavFileName(int mediaIndex);
+    auto getWavFileName(int mediaIndex) -> std::string;
 
     /* Generates a metadata file name based on the call ID. */
-    std::string getMetadataFileName();
+    auto getMetadataFileName() -> std::string;
 
     /* Constructs a full file path by combining a directory path and a filename. */
-    std::string getFullPath(std::string path, std::string fileName);
+    auto getFullPath(std::string path, const std::string& fileName) -> std::string;
     
     /* Creates a directory at the specified path if it does not already exist. */
-    void createDirectory(std::string path);
+    void createDirectory(const std::string& path);
     
     /* Store the call audio in a ".wav" file. */
-    void saveAudioMedia(pj::AudioMedia audioMedia, int mediaIndex);
+    void saveAudioMedia(const pj::AudioMedia& audioMedia, int mediaIndex);
     
     /* Store the SIPREC call metadata. */
     void saveMetadata();

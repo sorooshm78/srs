@@ -1,4 +1,4 @@
-Checks: 'modernize-*'
+Checks: 'modernize-*,performance-*'
 WarningsAsErrors: '*'
 HeaderFilterRegex: './include/.*'
 ExtraArgs:
