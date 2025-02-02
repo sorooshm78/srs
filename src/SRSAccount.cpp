@@ -6,7 +6,6 @@
 #include <pjsua2.hpp>
 #include <gsl/gsl>
 
-
 void SRSAccount::onIncomingCall(pj::OnIncomingCallParam& incomingParam)
 {
     auto* call = new SRSCall(*this, incomingParam.callId);

@@ -8,4 +8,5 @@ PointerAlignment: Left
 AllowShortFunctionsOnASingleLine: Inline
 SpacesBeforeTrailingComments: 1
 BreakBeforeBraces: Allman
+SortIncludes: false
 ReflowComments: true
