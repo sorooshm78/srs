@@ -1,15 +1,14 @@
 #include "SRSCall.hpp"
-
-#include <pjsua-lib/pjsua_internal.h>
-
-#include <filesystem>
-#include <fstream>
-#include <gsl/gsl>
-#include <iostream>
-#include <pjsua2.hpp>
-#include <string>
-
 #include "Config.hpp"
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
+#include <gsl/gsl>
+#include <pjsua2.hpp>
+#include <pjsua-lib/pjsua_internal.h>
 
 SRSCall::SRSCall(pj::Account& account, int callID) : pj::Call(account, callID) {}
 

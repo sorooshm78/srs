@@ -1,12 +1,12 @@
 #include "Config.hpp"
 
-#include <pjsua-lib/pjsua_internal.h>
-
-#include <filesystem>
-#include <fstream>
 #include <iostream>
+#include <fstream>
+#include <filesystem>
+
 #include <nlohmann/json.hpp>
 #include <pjsua2.hpp>
+#include <pjsua-lib/pjsua_internal.h>
 
 void Config::loadJsonConfig()
 {

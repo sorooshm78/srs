@@ -1,14 +1,14 @@
-#include <pjsua-lib/pjsua_internal.h>
+#include "SRSAccount.hpp"
+#include "Config.hpp"
 
-#include <csignal>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
+#include <csignal>
+#include <fstream>
+#include <filesystem>
+
 #include <nlohmann/json.hpp>
 #include <pjsua2.hpp>
-
-#include "Config.hpp"
-#include "SRSAccount.hpp"
+#include <pjsua-lib/pjsua_internal.h>
 
 using pj::AccountConfig;
 using pj::Endpoint;
