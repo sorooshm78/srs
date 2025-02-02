@@ -1,5 +1,6 @@
 BasedOnStyle: Google
 Language: Cpp
+AccessModifierOffset: -1
 IndentWidth: 4
 ColumnLimit: 100
 DerivePointerAlignment: false
@@ -7,5 +8,4 @@ PointerAlignment: Left
 AllowShortFunctionsOnASingleLine: Inline
 SpacesBeforeTrailingComments: 1
 BreakBeforeBraces: Allman
-SortIncludes: true
 ReflowComments: true
