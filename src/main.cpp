@@ -1,29 +1,30 @@
-#include "SRSAccount.hpp"
-#include "Config.hpp"
-#include <pjsua2.hpp>
-#include <iostream>
-#include <csignal>
-#include <fstream>
-#include <filesystem>
-#include <nlohmann/json.hpp>
 #include <pjsua-lib/pjsua_internal.h>
 
+#include <csignal>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <pjsua2.hpp>
 
+#include "Config.hpp"
+#include "SRSAccount.hpp"
+
+using pj::AccountConfig;
 using pj::Endpoint;
 using pj::EpConfig;
-using pj::TransportConfig;
-using pj::AccountConfig;
 using pj::Error;
+using pj::TransportConfig;
 using std::cout;
 using std::endl;
-using std::unique_ptr;
 using std::make_unique;
+using std::unique_ptr;
 
 // Flag to indicate whether a shutdown signal has been received
 bool isShutdown = false;
 
 /* Signal handler function that sets the isShutdown flag when a signal is received */
-void signalCallbackHandler(int  /*signum*/)
+void signalCallbackHandler(int /*signum*/)
 {
     isShutdown = true;
 }

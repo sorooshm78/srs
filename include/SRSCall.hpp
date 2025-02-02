@@ -1,17 +1,18 @@
-#include <pjsua2.hpp>
-#include <string>
 #include <cstdint>
 #include <iostream>
-
+#include <pjsua2.hpp>
+#include <string>
 
 class SRSCall : public pj::Call
 {
-public:
+   public:
     /* Constructor */
     explicit SRSCall(pj::Account& account, int callID = PJSUA_INVALID_ID);
 
     /* Prints the current state of a call */
-    void printCallState(const std::string& state, const std::string& localUri, const std::string& remoteUri, int64_t connectDuration, const std::string& callID);
+    void printCallState(const std::string& state, const std::string& localUri,
+                        const std::string& remoteUri, int64_t connectDuration,
+                        const std::string& callID);
 
     /**
      * Notify application when media state in the call has changed.
@@ -21,7 +22,7 @@ public:
      * failure.
      */
     void onCallMediaState(pj::OnCallMediaStateParam& params) override;
-    
+
     /**
      * Notify application when call state has changed.
      * Application may then query the call info to get the
@@ -29,7 +30,7 @@ public:
      */
     void onCallState(pj::OnCallStateParam& param) override;
 
-private:
+   private:
     pj::AudioMediaRecorder recorder1;
     pj::AudioMediaRecorder recorder2;
 
@@ -43,13 +44,13 @@ private:
 
     /* Constructs a full file path by combining a directory path and a filename. */
     std::string getFullPath(std::string path, const std::string& fileName);
-    
+
     /* Creates a directory at the specified path if it does not already exist. */
     void createDirectory(const std::string& path);
-    
+
     /* Store the call audio in a ".wav" file. */
     void saveAudioMedia(const pj::AudioMedia& audioMedia, int mediaIndex);
-    
+
     /* Store the SIPREC call metadata. */
     void saveMetadata();
 };

@@ -1,9 +1,10 @@
 #include "SRSAccount.hpp"
-#include "SRSCall.hpp"
-#include <pjsua2.hpp>
+
 #include <gsl/gsl>
 #include <iostream>
+#include <pjsua2.hpp>
 
+#include "SRSCall.hpp"
 
 void SRSAccount::onIncomingCall(pj::OnIncomingCallParam& incomingParam)
 {

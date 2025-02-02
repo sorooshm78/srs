@@ -1,8 +1,8 @@
+#include <pjsua-lib/pjsua_internal.h>
+
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pjsua2.hpp>
-#include <pjsua-lib/pjsua_internal.h>
-
 
 enum LogLevel
 {
@@ -15,8 +15,9 @@ enum LogLevel
     DETAILED_TRACE,
 };
 
-class Config {
-public:
+class Config
+{
+   public:
     static std::string configFilePath;
     static std::string listenIP;
     static std::string listenPort;
@@ -34,10 +35,11 @@ public:
 
     /* Converts the config string value to pjsua_sip_siprec_use. */
     static pjsua_sip_siprec_use getSiprecOption(const std::string& option);
-    
+
     /* Converts the config string value to LogLevel.*/
     static LogLevel getLogLevelOption(const std::string& option);
 
     /* Sets the variable with 'key' name from config file */
-    static void setVariableFromConfigFile(const nlohmann::json& config, const std::string& key, std::string& variable);
+    static void setVariableFromConfigFile(const nlohmann::json& config, const std::string& key,
+                                          std::string& variable);
 };
