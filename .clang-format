@@ -1,12 +1,31 @@
 BasedOnStyle: Google
 Language: Cpp
-AccessModifierOffset: -1
-IndentWidth: 4
-ColumnLimit: 100
-DerivePointerAlignment: false
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ColumnLimit: 80
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: false
 PointerAlignment: Left
-AllowShortFunctionsOnASingleLine: Inline
-SpacesBeforeTrailingComments: 1
-BreakBeforeBraces: Allman
+AccessModifierOffset: -2
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 SortIncludes: false
-ReflowComments: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+NamespaceIndentation: None
+AlignAfterOpenBracket: DontAlign
+ReflowComments: false
