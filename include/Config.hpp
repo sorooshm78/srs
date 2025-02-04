@@ -17,7 +17,8 @@ enum LogLevel {
 class Config {
 public:
   static std::string configFilePath;
-  static std::string listenIP;
+  static std::string ControlPlaneIP;
+  static std::string UserPlaneIP;
   static std::string listenPort;
   static std::string user;
   static std::string metadataPath;

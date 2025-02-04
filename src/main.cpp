@@ -41,6 +41,9 @@ int main() {
   endpoint.audDevManager().setNullDev();
 
   TransportConfig transportConfig;
+  if (!Config::ControlPlaneIP.empty()) {
+    transportConfig.boundAddress = Config::ControlPlaneIP;
+  }
   transportConfig.port = stoi(Config::listenPort);
   try {
     endpoint.transportCreate(PJSIP_TRANSPORT_UDP, transportConfig);
@@ -53,10 +56,14 @@ int main() {
   cout << "*** PJSUA2 STARTED ***" << endl;
 
   AccountConfig accountConfig;
-  accountConfig.idUri = "sip:" + Config::user + "@" + Config::listenIP;
+  accountConfig.idUri = "sip:" + Config::user + "@" + "service";
   accountConfig.regConfig.registrarUri = "";
   accountConfig.sipConfig.authCreds.clear();
   accountConfig.callConfig.siprecUse = Config::siprecMode;
+  if (!Config::UserPlaneIP.empty()) {
+    accountConfig.mediaConfig.transportConfig.boundAddress =
+        Config::UserPlaneIP;
+  }
 
   // Create the account
   unique_ptr<SRSAccount> account = make_unique<SRSAccount>();

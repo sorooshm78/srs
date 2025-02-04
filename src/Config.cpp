@@ -19,9 +19,10 @@ void Config::loadJsonConfig() {
     nlohmann::json config;
     configFile >> config;
 
-    Config::setVariableFromConfigFile(config, "listen_ip", Config::listenIP);
     Config::setVariableFromConfigFile(
-        config, "listen_port", Config::listenPort);
+        config, "control_plane_ip", Config::ControlPlaneIP);
+    Config::setVariableFromConfigFile(
+        config, "user_plane_ip", Config::UserPlaneIP);
     Config::setVariableFromConfigFile(config, "user", Config::user);
     Config::setVariableFromConfigFile(
         config, "metadata_path", Config::metadataPath);
@@ -89,7 +90,8 @@ LogLevel Config::getLogLevelOption(const std::string& option) {
 
 // Sets the default variables
 std::string Config::configFilePath = "/etc/srs/config.json";
-std::string Config::listenIP = "127.0.0.1";
+std::string Config::ControlPlaneIP = "";
+std::string Config::UserPlaneIP = "";
 std::string Config::listenPort = "5060";
 std::string Config::user = "srs";
 std::string Config::metadataPath = "/var/srs/metadata";
