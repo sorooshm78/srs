@@ -6,7 +6,8 @@ You can modify the SRS settings.
 To change the settings, create or edit the file located at `/etc/srs/config.json`
 ```json
 {
-    "listen_ip": "192.168.20.50",
+    "control_plane_ip": "192.168.20.50",
+    "user_plane_ip": "192.168.20.60",
     "listen_port": "5060",
     "metadata_path": "/var/srs/metadata",
     "sound_path": "/var/srs/sound",
@@ -15,7 +16,8 @@ To change the settings, create or edit the file located at `/etc/srs/config.json
 }
 ```
 
-* `listen_ip` : The IP address on which the server listens for incoming SIP requests.
+* `control_plane_ip` : The IP address used for signaling and control traffic (SIP).
+* `user_plane_ip` : The IP address used for media traffic (RTP).
 * `listen_port` : The port that the server listens on.
 * `metadata_path` : Where the metadata of SIPREC calls is stored.
 * `sound_path` : Where the sound of SIPREC calls is stored.
