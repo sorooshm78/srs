@@ -60,7 +60,7 @@ build_srs() {
 
     # Run CMake to generate build files in the build directory
     echo -e "${YELLOW} ########## Running CMake... ${RESET}"
-    cmake -S $SRC_DIR -B $BUILD_DIR
+    cmake -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -S $SRC_DIR -B $BUILD_DIR
     if [ $? -ne 0 ]; then
         echo -e "${RED} ########## CMake failed. Exiting... ${RESET}"
         exit 1

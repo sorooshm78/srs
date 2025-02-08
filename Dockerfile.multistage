@@ -1,5 +1,5 @@
 # Stage 1: Build dependencies and environment setup
-FROM ubuntu:22.04 AS build
+FROM ubuntu:24.04 AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 

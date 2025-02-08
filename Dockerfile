@@ -5,6 +5,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /src
 
 RUN apt-get update && apt-get install -y \
+    curl \
+    zip \
+    unzip \
+    tar \
     git \
     build-essential \
     libssl-dev \
@@ -14,6 +18,12 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/microsoft/vcpkg.git /vcpkg && \
+    /vcpkg/bootstrap-vcpkg.sh && \
+    /vcpkg/vcpkg install ms-gsl
+
+ENV VCPKG_ROOT=/vcpkg
 
 COPY . /src
 
