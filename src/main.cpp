@@ -41,8 +41,8 @@ int main() {
   endpoint.audDevManager().setNullDev();
 
   TransportConfig transportConfig;
-  if (!Config::ControlPlaneIP.empty()) {
-    transportConfig.boundAddress = Config::ControlPlaneIP;
+  if (!Config::controlPlaneIP.empty()) {
+    transportConfig.boundAddress = Config::controlPlaneIP;
   }
   transportConfig.port = stoi(Config::listenPort);
   try {
@@ -60,9 +60,9 @@ int main() {
   accountConfig.regConfig.registrarUri = "";
   accountConfig.sipConfig.authCreds.clear();
   accountConfig.callConfig.siprecUse = Config::siprecMode;
-  if (!Config::UserPlaneIP.empty()) {
+  if (!Config::userPlaneIP.empty()) {
     accountConfig.mediaConfig.transportConfig.boundAddress =
-        Config::UserPlaneIP;
+        Config::userPlaneIP;
   }
 
   // Create the account

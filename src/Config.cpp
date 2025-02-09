@@ -20,7 +20,7 @@ void Config::loadJsonConfig() {
     configFile >> config;
 
     Config::setVariableFromConfigFile(
-        config, "control_plane_ip", Config::ControlPlaneIP);
+        config, "control_plane_ip", Config::controlPlaneIP);
     Config::setVariableFromConfigFile(
         config, "user_plane_ip", Config::UserPlaneIP);
     Config::setVariableFromConfigFile(config, "user", Config::user);
@@ -90,8 +90,8 @@ LogLevel Config::getLogLevelOption(const std::string& option) {
 
 // Sets the default variables
 std::string Config::configFilePath = "/etc/srs/config.json";
-std::string Config::ControlPlaneIP = "";
-std::string Config::UserPlaneIP = "";
+std::string Config::controlPlaneIP = "";
+std::string Config::userPlaneIP = "";
 std::string Config::listenPort = "5060";
 std::string Config::user = "srs";
 std::string Config::metadataPath = "/var/srs/metadata";
