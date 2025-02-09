@@ -22,7 +22,7 @@ void Config::loadJsonConfig() {
     Config::setVariableFromConfigFile(
         config, "control_plane_ip", Config::controlPlaneIP);
     Config::setVariableFromConfigFile(
-        config, "user_plane_ip", Config::UserPlaneIP);
+        config, "user_plane_ip", Config::userPlaneIP);
     Config::setVariableFromConfigFile(config, "user", Config::user);
     Config::setVariableFromConfigFile(
         config, "metadata_path", Config::metadataPath);
