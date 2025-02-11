@@ -6,10 +6,13 @@
 #include <pjsua2.hpp>
 #include <gsl/gsl>
 
-void SRSAccount::onIncomingCall(pj::OnIncomingCallParam& incomingParam) {
+using pj::CallOpParam;
+using pj::OnIncomingCallParam;
+
+void SRSAccount::onIncomingCall(OnIncomingCallParam& incomingParam) {
   auto* call = new SRSCall(*this, incomingParam.callId);
   Expects(call != nullptr);
-  pj::CallOpParam param;
+  CallOpParam param;
   param.statusCode = PJSIP_SC_OK;
   param.opt.audioCount = 2;
   param.opt.videoCount = 0;
