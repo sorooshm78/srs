@@ -35,7 +35,7 @@ int main() {
   endpoint.libCreate();
 
   EpConfig endpoint_config;
-  endpoint_config.logConfig.level = Config::log_level;
+  endpoint_config.logConfig.level = static_cast<int>(Config::log_level);;
   endpoint.libInit(endpoint_config);
   // Disable audio input/output with a null device
   endpoint.audDevManager().setNullDev();
