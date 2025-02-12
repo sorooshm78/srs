@@ -61,7 +61,7 @@ string SRSCall::getFullPath(string path, const string& fileName) {
 
 void SRSCall::saveAudioMedia(const AudioMedia& audioMedia, int mediaIndex) {
   Expects((mediaIndex == 0) || (mediaIndex == 1));
-  string path = getFullPath(Config::soundPath, getWavFileName(mediaIndex));
+  string path = getFullPath(Config::sound_path, getWavFileName(mediaIndex));
   if (mediaIndex == 0) {
     recorder1.createRecorder(path);
     audioMedia.startTransmit(recorder1);
@@ -78,7 +78,7 @@ void SRSCall::saveMetadata() {
   Expects(call != nullptr);
   string metadata =
       string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
-  string path = getFullPath(Config::metadataPath, getMetadataFileName());
+  string path = getFullPath(Config::metadata_path, getMetadataFileName());
   ofstream file(path);
 
   Expects(file.is_open());
@@ -97,8 +97,8 @@ void SRSCall::onCallState(OnCallStateParam& /*param*/) {
 
 void SRSCall::onCallMediaState(OnCallMediaStateParam& /*params*/) {
   CallInfo callInfo = getInfo();
-  createDirectory(Config::soundPath);
-  createDirectory(Config::metadataPath);
+  createDirectory(Config::sound_path);
+  createDirectory(Config::metadata_path);
   for (int mediaIndex = 0; mediaIndex < callInfo.media.size(); mediaIndex++) {
     if (callInfo.media[mediaIndex].type == PJMEDIA_TYPE_AUDIO) {
       AudioMedia audioMedia = getAudioMedia(mediaIndex);

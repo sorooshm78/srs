@@ -29,22 +29,22 @@ void signalCallbackHandler(int /*signum*/) {
 }
 
 int main() {
-  Config::loadJsonConfig();
+  Config::LoadJsonConfig();
 
   Endpoint endpoint;
   endpoint.libCreate();
 
   EpConfig endpointConfig;
-  endpointConfig.logConfig.level = Config::logLevel;
+  endpointConfig.logConfig.level = Config::log_level;
   endpoint.libInit(endpointConfig);
   // Disable audio input/output with a null device
   endpoint.audDevManager().setNullDev();
 
   TransportConfig transportConfig;
-  if (!Config::controlPlaneIP.empty()) {
-    transportConfig.boundAddress = Config::controlPlaneIP;
+  if (!Config::control_plane_ip.empty()) {
+    transportConfig.boundAddress = Config::control_plane_ip;
   }
-  transportConfig.port = stoi(Config::listenPort);
+  transportConfig.port = stoi(Config::listen_port);
   try {
     endpoint.transportCreate(PJSIP_TRANSPORT_UDP, transportConfig);
   } catch (Error& err) {
@@ -59,10 +59,10 @@ int main() {
   accountConfig.idUri = "sip:" + Config::user + "@" + "service";
   accountConfig.regConfig.registrarUri = "";
   accountConfig.sipConfig.authCreds.clear();
-  accountConfig.callConfig.siprecUse = Config::siprecMode;
-  if (!Config::userPlaneIP.empty()) {
+  accountConfig.callConfig.siprecUse = Config::siprec_mode;
+  if (!Config::user_plane_ip.empty()) {
     accountConfig.mediaConfig.transportConfig.boundAddress =
-        Config::userPlaneIP;
+        Config::user_plane_ip;
   }
 
   // Create the account

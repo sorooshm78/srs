@@ -16,47 +16,47 @@ using std::ifstream;
 using std::invalid_argument;
 using std::string;
 
-void Config::loadJsonConfig() {
-  ifstream configFile(Config::configFilePath);
-  if (!configFile.is_open()) {
-    cout << "Warn: Cannot open configuration file: " << Config::configFilePath
+void Config::LoadJsonConfig() {
+  ifstream config_file(Config::config_file_path);
+  if (!config_file.is_open()) {
+    cout << "Warn: Cannot open configuration file: " << Config::config_file_path
          << endl;
   }
 
   try {
     json config;
-    configFile >> config;
+    config_file >> config;
 
-    Config::setVariableFromConfigFile(
-        config, "control_plane_ip", Config::controlPlaneIP);
-    Config::setVariableFromConfigFile(
-        config, "user_plane_ip", Config::userPlaneIP);
-    Config::setVariableFromConfigFile(config, "user", Config::user);
-    Config::setVariableFromConfigFile(
-        config, "metadata_path", Config::metadataPath);
-    Config::setVariableFromConfigFile(config, "sound_path", Config::soundPath);
+    Config::SetVariableFromConfigFile(
+        config, "control_plane_ip", Config::control_plane_ip);
+    Config::SetVariableFromConfigFile(
+        config, "user_plane_ip", Config::user_plane_ip);
+    Config::SetVariableFromConfigFile(config, "user", Config::user);
+    Config::SetVariableFromConfigFile(
+        config, "metadata_path", Config::metadata_path);
+    Config::SetVariableFromConfigFile(config, "sound_path", Config::sound_path);
 
     if (config.contains("siprec_mode")) {
-      Config::siprecMode =
-          Config::getSiprecOption(config["siprec_mode"].get<string>());
+      Config::siprec_mode =
+          Config::GetSiprecOption(config["siprec_mode"].get<string>());
     }
     if (config.contains("log_level")) {
-      Config::logLevel =
-          Config::getLogLevelOption(config["log_level"].get<string>());
+      Config::log_level =
+          Config::GetLogLevelOption(config["log_level"].get<string>());
     }
   } catch (parse_error& e) {
     cout << "Error: Failed to parse JSON file. " << e.what() << endl;
   }
 }
 
-void Config::setVariableFromConfigFile(
+void Config::SetVariableFromConfigFile(
     const nlohmann::json& config, const string& key, string& variable) {
   if (config.contains(key)) {
     variable = config[key].get<string>();
   }
 }
 
-pjsua_sip_siprec_use Config::getSiprecOption(const string& option) {
+pjsua_sip_siprec_use Config::GetSiprecOption(const string& option) {
   if (option == "inactive") {
     return PJSUA_SIP_SIPREC_INACTIVE;
   }
@@ -70,7 +70,7 @@ pjsua_sip_siprec_use Config::getSiprecOption(const string& option) {
   throw invalid_argument("Invalid siprec_mode value in configuration.");
 }
 
-LogLevel Config::getLogLevelOption(const string& option) {
+LogLevel Config::GetLogLevelOption(const string& option) {
   if (option == "fatal_error") {
     return LogLevel::FATAL_ERROR;
   }
@@ -97,12 +97,12 @@ LogLevel Config::getLogLevelOption(const string& option) {
 }
 
 // Sets the default variables
-string Config::configFilePath = "/etc/srs/config.json";
-string Config::controlPlaneIP = "";
-string Config::userPlaneIP = "";
-string Config::listenPort = "5060";
+string Config::config_file_path = "/etc/srs/config.json";
+string Config::control_plane_ip = "";
+string Config::user_plane_ip = "";
+string Config::listen_port = "5060";
 string Config::user = "srs";
-string Config::metadataPath = "/var/srs/metadata";
-string Config::soundPath = "/var/srs/sound";
-LogLevel Config::logLevel = LogLevel::DEBUG;
-pjsua_sip_siprec_use Config::siprecMode = PJSUA_SIP_SIPREC_OPTIONAL;
+string Config::metadata_path = "/var/srs/metadata";
+string Config::sound_path = "/var/srs/sound";
+LogLevel Config::log_level = LogLevel::DEBUG;
+pjsua_sip_siprec_use Config::siprec_mode = PJSUA_SIP_SIPREC_OPTIONAL;

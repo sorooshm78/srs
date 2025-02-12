@@ -4,7 +4,7 @@
 #include <pjsua2.hpp>
 #include <pjsua-lib/pjsua_internal.h>
 
-enum LogLevel {
+enum class LogLevel {
   FATAL_ERROR = 0,
   ERROR,
   WARNING,
@@ -16,29 +16,29 @@ enum LogLevel {
 
 class Config {
 public:
-  static std::string configFilePath;
-  static std::string controlPlaneIP;
-  static std::string userPlaneIP;
-  static std::string listenPort;
+  static std::string config_file_path;
+  static std::string control_plane_ip;
+  static std::string user_plane_ip;
+  static std::string listen_port;
   static std::string user;
-  static std::string metadataPath;
-  static std::string soundPath;
-  static LogLevel logLevel;
-  static pjsua_sip_siprec_use siprecMode;
+  static std::string metadata_path;
+  static std::string sound_path;
+  static LogLevel log_level;
+  static pjsua_sip_siprec_use siprec_mode;
 
   /**
      * This function reads the configurations from the file
      * and sets them into the variables.
      */
-  static void loadJsonConfig();
+  static void LoadJsonConfig();
 
   /* Converts the config string value to pjsua_sip_siprec_use. */
-  static pjsua_sip_siprec_use getSiprecOption(const std::string& option);
+  static pjsua_sip_siprec_use GetSiprecOption(const std::string& option);
 
   /* Converts the config string value to LogLevel.*/
-  static LogLevel getLogLevelOption(const std::string& option);
+  static LogLevel GetLogLevelOption(const std::string& option);
 
   /* Sets the variable with 'key' name from config file */
-  static void setVariableFromConfigFile(const nlohmann::json& config,
+  static void SetVariableFromConfigFile(const nlohmann::json& config,
       const std::string& key, std::string& variable);
 };
