@@ -5,5 +5,5 @@
 class SRSAccount : public pj::Account {
 public:
   /* Notify application on incoming call. */
-  void onIncomingCall(pj::OnIncomingCallParam& incomingParam) override;
+  void onIncomingCall(pj::OnIncomingCallParam& incoming_param) override;
 };
