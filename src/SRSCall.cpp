@@ -39,14 +39,14 @@ void SRSCall::PrintCallState(const string& state, const string& local_uri,
 }
 
 string SRSCall::GetWavFileName(int media_index) {
-  CallInfo callInfo = getInfo();
+  CallInfo call_info = getInfo();
   int recorder = media_index + 1;
-  return callInfo.callIdString + "-" + to_string(recorder) + ".wav";
+  return call_info.callIdString + "-" + to_string(recorder) + ".wav";
 }
 
 string SRSCall::GetMetadataFileName() {
-  CallInfo callInfo = getInfo();
-  return callInfo.callIdString + "-" + "Metadata" + ".txt";
+  CallInfo call_info = getInfo();
+  return call_info.callIdString + "-" + "Metadata" + ".txt";
 }
 
 string SRSCall::GetFullPath(string path, const string& file_name) {
@@ -73,8 +73,8 @@ void SRSCall::SaveAudioMedia(const AudioMedia& audio_media, int media_index) {
 }
 
 void SRSCall::SaveMetadata() {
-  int callId = getId();
-  pjsua_call* call = &pjsua_var.calls[callId];
+  int call_id = getId();
+  pjsua_call* call = &pjsua_var.calls[call_id];
   Expects(call != nullptr);
   string metadata =
       string(call->siprec_metadata.ptr, call->siprec_metadata.slen);
@@ -87,20 +87,20 @@ void SRSCall::SaveMetadata() {
 }
 
 void SRSCall::onCallState(OnCallStateParam& /*param*/) {
-  CallInfo callInfo = getInfo();
-  if (callInfo.state == PJSIP_INV_STATE_CONNECTING ||
-      callInfo.state == PJSIP_INV_STATE_DISCONNECTED) {
-    PrintCallState(callInfo.stateText, callInfo.localUri, callInfo.remoteUri,
-        callInfo.connectDuration.sec, callInfo.callIdString);
+  CallInfo call_info = getInfo();
+  if (call_info.state == PJSIP_INV_STATE_CONNECTING ||
+      call_info.state == PJSIP_INV_STATE_DISCONNECTED) {
+    PrintCallState(call_info.stateText, call_info.localUri, call_info.remoteUri,
+        call_info.connectDuration.sec, call_info.callIdString);
   }
 }
 
 void SRSCall::onCallMediaState(OnCallMediaStateParam& /*params*/) {
-  CallInfo callInfo = getInfo();
+  CallInfo call_info = getInfo();
   CreateDirectory(Config::sound_path);
   CreateDirectory(Config::metadata_path);
-  for (int media_index = 0; media_index < callInfo.media.size(); media_index++) {
-    if (callInfo.media[media_index].type == PJMEDIA_TYPE_AUDIO) {
+  for (int media_index = 0; media_index < call_info.media.size(); media_index++) {
+    if (call_info.media[media_index].type == PJMEDIA_TYPE_AUDIO) {
       AudioMedia audio_media = getAudioMedia(media_index);
       SaveAudioMedia(audio_media, media_index);
     }
