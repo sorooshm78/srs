@@ -90,8 +90,8 @@ void SRSCall::onCallState(OnCallStateParam& /*param*/) {
   CallInfo callInfo = getInfo();
   if (callInfo.state == PJSIP_INV_STATE_CONNECTING ||
       callInfo.state == PJSIP_INV_STATE_DISCONNECTED) {
-    PrintCallState(callInfo.stateText, callInfo.local_uri, callInfo.remote_uri,
-        callInfo.connect_duration.sec, callInfo.callIdString);
+    PrintCallState(callInfo.stateText, callInfo.localUri, callInfo.remoteUri,
+        callInfo.connectDuration.sec, callInfo.callIdString);
   }
 }
 
