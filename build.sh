@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # Define color codes
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-BLUE="\e[34m"
-MAGENTA="\e[35m"
-CYAN="\e[36m"
-RESET="\e[0m"
+readonly RED="\e[31m"
+readonly GREEN="\e[32m"
+readonly YELLOW="\e[33m"
+readonly BLUE="\e[34m"
+readonly MAGENTA="\e[35m"
+readonly CYAN="\e[36m"
+readonly RESET="\e[0m"
 
 # Define directories
-SRC_DIR=$(pwd)
-PJPROJECT_DIR="$SRC_DIR/pjproject"
-SRS_DIR="$SRC_DIR/src"
-BUILD_DIR="$SRC_DIR/build"
+readonly SRC_DIR=$(pwd)
+readonly PJPROJECT_DIR="$SRC_DIR/pjproject"
+readonly SRS_DIR="$SRC_DIR/src"
+readonly BUILD_DIR="$SRC_DIR/build"
 
 # Function to build and install pjproject
 build_pjproject() {
