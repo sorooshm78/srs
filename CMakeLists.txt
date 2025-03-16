@@ -15,4 +15,3 @@ add_executable(srs src/main.cpp src/Config.cpp src/SRSAccount.cpp src/SRSCall.cp
 target_link_libraries(srs PRIVATE ${PJSIP_STATIC_LIBRARIES})
 target_link_libraries(srs PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(srs PRIVATE Microsoft.GSL::GSL)
-target_include_directories(srs PRIVATE ${CMAKE_SOURCE_DIR}/include)
