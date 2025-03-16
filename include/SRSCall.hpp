@@ -9,7 +9,10 @@ public:
   /* Constructor */
   explicit SRSCall(pj::Account& account, int call_id = PJSUA_INVALID_ID);
 
-  /* Prints the current state of a call */
+   /* Destructor */
+   virtual ~SRSCall();
+  
+   /* Prints the current state of a call */
   void PrintCallState(const std::string& state, const std::string& local_uri,
       const std::string& remote_uri, int64_t connect_duration,
       const std::string& call_id);

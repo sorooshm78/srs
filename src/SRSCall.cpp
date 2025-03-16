@@ -25,6 +25,8 @@ using std::filesystem::exists;
 
 SRSCall::SRSCall(Account& account, int call_id) : Call(account, call_id) {}
 
+SRSCall::~SRSCall() {}
+
 void SRSCall::PrintCallState(const string& state, const string& local_uri,
     const string& remote_uri, int64_t connect_duration, const string& call_id) {
   cout << "########## "
@@ -92,6 +94,9 @@ void SRSCall::onCallState(OnCallStateParam& /*param*/) {
       call_info.state == PJSIP_INV_STATE_DISCONNECTED) {
     PrintCallState(call_info.stateText, call_info.localUri, call_info.remoteUri,
         call_info.connectDuration.sec, call_info.callIdString);
+    if (call_info.state == PJSIP_INV_STATE_DISCONNECTED) {
+      delete this;
+    }
   }
 }
 
